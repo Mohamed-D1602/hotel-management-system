@@ -1,0 +1,14 @@
+{
+  "name": "hotel-management-system",
+  "version": "1.0.0",
+  "description": "Generic multi-brand hotel management system. First brand: Kanon Hotels (Khartoum & Jeddah).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^5.2.1"
+  }
+}
