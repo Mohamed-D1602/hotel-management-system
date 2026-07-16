@@ -1,6 +1,6 @@
 // Database layer — SQLite via better-sqlite3.
 // Generic multi-brand, multi-property schema. Any hotel brand can be added;
-// Kanon Hotels (Khartoum + Jeddah) is seeded as the first brand.
+// Kanon Hotels (Khartoum + Makkah) is seeded as the first brand.
 
 const path = require("path");
 const fs = require("fs");
@@ -155,8 +155,8 @@ function seed() {
       "Street 15, Al-Amarat, P.O. Box 2425", "", "SDG", "Africa/Khartoum"
     ).lastInsertRowid;
 
-    const jeddahId = insertProperty.run(
-      brandId, "Kanon Hotel Jeddah", "Jeddah", "Saudi Arabia",
+    const makkahId = insertProperty.run(
+      brandId, "Kanon Hotel Makkah", "Makkah", "Saudi Arabia",
       "", "", "SAR", "Asia/Riyadh"
     ).lastInsertRowid;
 
@@ -175,8 +175,8 @@ function seed() {
     ];
     const typeIds = khartoumTypes.map(t => insertType.run(khartoumId, ...t).lastInsertRowid);
 
-    insertType.run(jeddahId, "Standard Room", "En-suite room", 2, 0);
-    insertType.run(jeddahId, "Suite", "Suite with lounge", 3, 0);
+    insertType.run(makkahId, "Standard Room", "En-suite room", 2, 0);
+    insertType.run(makkahId, "Suite", "Suite with lounge", 3, 0);
 
     // Sample rooms for Khartoum (a starter block per floor; the hotel has 124
     // en-suite rooms — add the rest from the Rooms screen or the API).
@@ -200,9 +200,14 @@ function seed() {
   });
 
   seedTx();
-  console.log("Seeded: Kanon Hotels brand, Khartoum + Jeddah properties, default admin.");
+  console.log("Seeded: Kanon Hotels brand, Khartoum + Makkah properties, default admin.");
 }
 
 seed();
+
+// One-time migration: earlier versions seeded the Saudi property as Jeddah.
+db.prepare(`
+  UPDATE properties SET name = 'Kanon Hotel Makkah', city = 'Makkah'
+  WHERE name = 'Kanon Hotel Jeddah'`).run();
 
 module.exports = { db, hashPassword, verifyPassword, reservationCode };

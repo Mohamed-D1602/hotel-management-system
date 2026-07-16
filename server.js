@@ -7,6 +7,7 @@ const express = require("express");
 const { registerAuthRoutes } = require("./src/auth");
 const { registerCoreRoutes } = require("./src/core-routes");
 const { registerReservationRoutes } = require("./src/reservation-routes");
+const { registerPublicRoutes } = require("./src/public-routes");
 
 const app = express();
 app.use(express.json());
@@ -15,16 +16,18 @@ app.use(express.static(path.join(__dirname, "public")));
 registerAuthRoutes(app);
 registerCoreRoutes(app);
 registerReservationRoutes(app);
+registerPublicRoutes(app);
 
 // Health check
 app.get("/api/health", (req, res) => res.json({ ok: true, service: "hms" }));
 
-// Single-page app fallback (any non-API GET serves the app shell)
+// Fallbacks: /admin → front-desk app, everything else → guest booking site
 app.use((req, res, next) => {
-  if (req.method === "GET" && !req.path.startsWith("/api/")) {
-    return res.sendFile(path.join(__dirname, "public", "index.html"));
+  if (req.method !== "GET" || req.path.startsWith("/api/")) return next();
+  if (req.path === "/admin" || req.path.startsWith("/admin/")) {
+    return res.sendFile(path.join(__dirname, "public", "admin", "index.html"));
   }
-  next();
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 const PORT = process.env.PORT || 3000;

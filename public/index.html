@@ -3,60 +3,148 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HMS — Front Desk</title>
-<link rel="stylesheet" href="/styles.css" />
+<title>Kanon Hotels — Khartoum · Makkah | Book your stay</title>
+<meta name="description" content="Kanon Hotels — refined hospitality in Khartoum and Makkah. Check availability and book your room online." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/booking.css" />
 </head>
 <body>
 
-<!-- ======================= Sign in ======================= -->
-<div id="login-view" class="login-wrap hidden">
-  <form id="login-form" class="login-card">
-    <div class="login-mark">HMS</div>
-    <h1>Front Desk</h1>
-    <p class="login-sub">Sign in to manage your properties</p>
-    <label>Email
-      <input type="email" id="login-email" autocomplete="username" required />
+<header class="top">
+  <div class="wordmark">
+    <span class="wordmark-ar">فندق كنون</span>
+    <span class="wordmark-en">KANON HOTELS</span>
+  </div>
+  <nav class="top-nav">
+    <a href="#hotels">Our hotels</a>
+    <a href="#stay">Rooms</a>
+    <a href="#dining">Dining</a>
+    <a href="#contact">Contact</a>
+    <a class="staff-link" href="/admin">Staff sign-in</a>
+  </nav>
+</header>
+
+<!-- ============================ hero ============================ -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Khartoum · Makkah</p>
+    <h1>Where the two Niles meet,<br />hospitality begins.</h1>
+    <p class="hero-sub">Kanon Hotels welcomes you in the heart of Khartoum —
+      and soon, steps from the Holy City of Makkah.</p>
+
+    <!-- confluence motif -->
+    <svg class="confluence" viewBox="0 0 320 40" aria-hidden="true">
+      <path d="M0 8 C 110 8, 210 32, 320 32" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M0 32 C 110 32, 210 8, 320 8" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+      <circle cx="160" cy="20" r="3" fill="currentColor"/>
+    </svg>
+  </div>
+
+  <!-- booking bar -->
+  <form id="search-form" class="booking-bar" aria-label="Check availability">
+    <label>Hotel
+      <select id="search-hotel" required></select>
     </label>
-    <label>Password
-      <input type="password" id="login-password" autocomplete="current-password" required />
+    <label>Check-in
+      <input type="date" id="search-in" required />
     </label>
-    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
-    <p id="login-error" class="form-error"></p>
+    <label>Check-out
+      <input type="date" id="search-out" required />
+    </label>
+    <label>Guests
+      <select id="search-guests">
+        <option value="1">1 guest</option>
+        <option value="2" selected>2 guests</option>
+        <option value="3">3 guests</option>
+        <option value="4">4 guests</option>
+      </select>
+    </label>
+    <button type="submit" class="btn-gold">Check availability</button>
   </form>
-</div>
+</section>
 
-<!-- ======================= App shell ======================= -->
-<div id="app-view" class="app hidden">
-  <aside class="sidebar">
-    <div class="sidebar-mark">HMS</div>
-    <select id="property-switcher" class="property-switcher" aria-label="Property"></select>
-    <nav class="nav">
-      <button class="nav-item active" data-page="dashboard">Dashboard</button>
-      <button class="nav-item" data-page="reservations">Reservations</button>
-      <button class="nav-item" data-page="rooms">Rooms</button>
-      <button class="nav-item" data-page="guests">Guests</button>
-      <button class="nav-item" data-page="room-types">Room types &amp; rates</button>
-      <button class="nav-item" data-page="properties">Properties</button>
-    </nav>
-    <div class="sidebar-footer">
-      <div id="user-name" class="user-name"></div>
-      <button id="logout-btn" class="btn btn-ghost">Sign out</button>
+<!-- ============================ results ============================ -->
+<section id="stay" class="section">
+  <div class="section-head">
+    <h2>Rooms &amp; suites</h2>
+    <p id="results-sub" class="section-sub">Choose your dates above to see live availability and rates.</p>
+  </div>
+  <div id="results" class="rooms-grid" aria-live="polite"></div>
+</section>
+
+<!-- ============================ hotels ============================ -->
+<section id="hotels" class="section section-deep">
+  <div class="section-head">
+    <h2>Two cities, one welcome</h2>
+  </div>
+  <div class="hotels-grid">
+    <article class="hotel-card">
+      <div class="hotel-mark">خ</div>
+      <h3>Kanon Hotel Khartoum</h3>
+      <p class="hotel-place">Street 15, Al-Amarat · Khartoum, Sudan</p>
+      <p>124 en-suite rooms in the diplomatic quarter of Al-Amarat, with the
+         Dan Restaurant's Indian and international kitchen, Bawga Coffee Shop,
+         Kanon Café, a fitness suite with sauna and steam room, and four
+         conference halls for business and celebration.</p>
+    </article>
+    <article class="hotel-card">
+      <div class="hotel-mark">م</div>
+      <h3>Kanon Hotel Makkah</h3>
+      <p class="hotel-place">Makkah, Saudi Arabia</p>
+      <p>Our second home, created for pilgrims and visitors to the Holy City —
+         quiet rooms, warm Sudanese hospitality, and everything your journey
+         needs. Opening details will be announced soon; early bookings are
+         welcome.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============================ dining ============================ -->
+<section id="dining" class="section">
+  <div class="section-head">
+    <h2>Dining &amp; leisure in Khartoum</h2>
+  </div>
+  <div class="amenity-row">
+    <div class="amenity"><span class="amenity-title">Dan Restaurant</span>Indian &amp; international cuisine</div>
+    <div class="amenity"><span class="amenity-title">Bawga Coffee Shop</span>Coffee, sweets &amp; conversation</div>
+    <div class="amenity"><span class="amenity-title">Kanon Café</span>Light dining through the day</div>
+    <div class="amenity"><span class="amenity-title">Wellness</span>Gym · sauna · steam room</div>
+    <div class="amenity"><span class="amenity-title">Meetings</span>Four conference halls</div>
+  </div>
+</section>
+
+<!-- ============================ contact ============================ -->
+<footer id="contact" class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="wordmark footer-wordmark">
+        <span class="wordmark-ar">فندق كنون</span>
+        <span class="wordmark-en">KANON HOTELS</span>
+      </div>
+      <p>A Kanon Group company</p>
     </div>
-  </aside>
+    <div>
+      <h4>Khartoum</h4>
+      <p>Street 15, Al-Amarat<br />P.O. Box 2425, Khartoum, Sudan</p>
+    </div>
+    <div>
+      <h4>Makkah</h4>
+      <p>Makkah, Saudi Arabia<br />Opening soon</p>
+    </div>
+    <div>
+      <h4>Reservations</h4>
+      <p>Book online any time —<br />your confirmation code arrives instantly.</p>
+    </div>
+  </div>
+  <p class="footer-line">© Kanon Hotels. All rights reserved.</p>
+</footer>
 
-  <main class="content">
-    <div id="page-dashboard" class="page"></div>
-    <div id="page-reservations" class="page hidden"></div>
-    <div id="page-rooms" class="page hidden"></div>
-    <div id="page-guests" class="page hidden"></div>
-    <div id="page-room-types" class="page hidden"></div>
-    <div id="page-properties" class="page hidden"></div>
-  </main>
-</div>
-
+<!-- ============================ booking modal ============================ -->
 <div id="modal-root"></div>
 <div id="toast" class="toast hidden"></div>
 
-<script src="/app.js"></script>
+<script src="/booking.js"></script>
 </body>
 </html>

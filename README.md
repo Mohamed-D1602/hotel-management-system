@@ -5,7 +5,14 @@ properties can be managed from one installation. The first brand configured is
 **Kanon Hotels**, with two locations:
 
 - **Kanon Hotel Khartoum** — Street 15, Al-Amarat, Khartoum, Sudan (SDG)
-- **Kanon Hotel Jeddah** — Jeddah, Saudi Arabia (SAR)
+- **Kanon Hotel Makkah** — Makkah, Saudi Arabia (SAR)
+
+## Two applications in one
+
+| URL | Who it's for |
+|---|---|
+| `/` | **Guests** — public booking website: browse both hotels, check live availability, and book online. Bookings appear instantly at the front desk. |
+| `/admin` | **Staff** — front-desk system: dashboard, reservations, check-in/out, rooms, guests, rates, payments. Requires sign-in. |
 
 ## Features
 
@@ -35,7 +42,10 @@ npm install
 npm start
 ```
 
-Then open <http://localhost:3000>.
+Then open:
+
+- **Guest booking site:** <http://localhost:3000>
+- **Staff front desk:** <http://localhost:3000/admin>
 
 **Default login:** `admin@kanon.example` / `admin123`
 Change this password immediately after first sign-in (there is a
@@ -55,6 +65,9 @@ All endpoints require `Authorization: Bearer <token>` except login.
 
 | Method | Endpoint | Purpose |
 |---|---|---|
+| GET | `/api/public/properties` | (public) Hotels list |
+| GET | `/api/public/properties/:id/availability?check_in=&check_out=` | (public) Availability by room type |
+| POST | `/api/public/bookings` | (public) Create an online booking |
 | POST | `/api/auth/login` | Sign in, returns token |
 | GET | `/api/properties` | List properties |
 | POST | `/api/properties` | Add property (admin) |
@@ -77,7 +90,9 @@ src/db.js                  Schema, seed data, password hashing
 src/auth.js                Sessions, login, users
 src/core-routes.js         Brands, properties, room types, rooms, guests
 src/reservation-routes.js  Reservations, availability, payments, dashboard
-public/                    Front-desk single-page app
+public/                    Guest booking website (index.html, booking.css, booking.js)
+public/admin/              Staff front-desk single-page app
+src/public-routes.js       Public booking API (no login)
 data/                      SQLite database (created at runtime, git-ignored)
 ```
 

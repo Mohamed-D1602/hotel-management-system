@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HMS — Front Desk</title>
+<link rel="stylesheet" href="/admin/styles.css" />
+</head>
+<body>
+
+<!-- ======================= Sign in ======================= -->
+<div id="login-view" class="login-wrap hidden">
+  <form id="login-form" class="login-card">
+    <div class="login-mark">HMS</div>
+    <h1>Front Desk</h1>
+    <p class="login-sub">Sign in to manage your properties</p>
+    <label>Email
+      <input type="email" id="login-email" autocomplete="username" required />
+    </label>
+    <label>Password
+      <input type="password" id="login-password" autocomplete="current-password" required />
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+    <p id="login-error" class="form-error"></p>
+  </form>
+</div>
+
+<!-- ======================= App shell ======================= -->
+<div id="app-view" class="app hidden">
+  <aside class="sidebar">
+    <div class="sidebar-mark">HMS</div>
+    <select id="property-switcher" class="property-switcher" aria-label="Property"></select>
+    <nav class="nav">
+      <button class="nav-item active" data-page="dashboard">Dashboard</button>
+      <button class="nav-item" data-page="reservations">Reservations</button>
+      <button class="nav-item" data-page="rooms">Rooms</button>
+      <button class="nav-item" data-page="guests">Guests</button>
+      <button class="nav-item" data-page="room-types">Room types &amp; rates</button>
+      <button class="nav-item" data-page="properties">Properties</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div id="user-name" class="user-name"></div>
+      <button id="logout-btn" class="btn btn-ghost">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div id="page-dashboard" class="page"></div>
+    <div id="page-reservations" class="page hidden"></div>
+    <div id="page-rooms" class="page hidden"></div>
+    <div id="page-guests" class="page hidden"></div>
+    <div id="page-room-types" class="page hidden"></div>
+    <div id="page-properties" class="page hidden"></div>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="/admin/app.js"></script>
+</body>
+</html>

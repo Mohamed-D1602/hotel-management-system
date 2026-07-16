@@ -86,6 +86,41 @@ function assert(cond, label) {
   r = await api(`/api/properties/${khartoum.id}/dashboard?date=2030-01-10`);
   assert(r.status === 200 && typeof r.data.occupancy_pct === "number", "dashboard");
 
+  // ---------- public booking site API (no auth) ----------
+  const pub = (path, options = {}) =>
+    fetch(BASE + path, {
+      ...options,
+      headers: { "Content-Type": "application/json" },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    }).then(async (x) => ({ status: x.status, data: await x.json() }));
+
+  r = await pub("/api/public/properties");
+  assert(r.status === 200 && r.data.length >= 2, "public: hotels list (no login)");
+  const makkah = r.data.find((p) => p.city === "Makkah");
+  assert(makkah, "public: Makkah property present");
+
+  r = await pub(`/api/public/properties/${khartoum.id}/availability?check_in=2030-02-01&check_out=2030-02-03`);
+  assert(r.status === 200 && r.data.room_types.length === 6, "public: availability by room type");
+  const bookable = r.data.room_types.find((t) => t.available > 0);
+  assert(bookable, "public: at least one bookable type");
+
+  r = await pub("/api/public/bookings", { method: "POST",
+    body: { property_id: khartoum.id, room_type_id: bookable.id,
+            check_in: "2030-02-01", check_out: "2030-02-03",
+            full_name: "Online Guest", phone: "+249 912 000 000" } });
+  assert(r.status === 201 && r.data.code, "public: online booking created, code " + r.data.code);
+
+  // booking must appear in the front-desk system
+  r = await api(`/api/properties/${khartoum.id}/reservations?status=booked`);
+  assert(r.data.some((x) => x.guest_name === "Online Guest"),
+    "online booking visible to front desk");
+
+  // guest with no contact details is rejected
+  r = await pub("/api/public/bookings", { method: "POST",
+    body: { property_id: khartoum.id, room_type_id: bookable.id,
+            check_in: "2030-02-01", check_out: "2030-02-03", full_name: "No Contact" } });
+  assert(r.status === 400, "public: booking without phone/email rejected");
+
   console.log("\nAll smoke tests passed.");
   process.exit(0);
 })().catch((e) => { console.error("FAIL:", e); process.exit(1); });
