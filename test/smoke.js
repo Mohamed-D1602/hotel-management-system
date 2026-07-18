@@ -30,9 +30,9 @@ function assert(cond, label) {
 
   // properties
   r = await api("/api/properties");
-  assert(r.data.length >= 2, "two seeded properties");
-  const khartoum = r.data.find((p) => p.city === "Khartoum");
-  assert(khartoum && khartoum.currency === "SDG", "Khartoum property with SDG");
+  assert(r.data.length >= 3, "three seeded properties");
+  const khartoum = r.data.find((p) => p.name === "Kanon Hotel Khartoum");
+  assert(khartoum && khartoum.currency === "USD", "Khartoum property with USD rates");
 
   // guest
   r = await api("/api/guests", { method: "POST",

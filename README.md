@@ -55,9 +55,9 @@ The database is created automatically at `data/hms.sqlite` on first run and
 seeded with the Kanon Hotels brand, both properties, sample room types, and a
 starter block of rooms for Khartoum.
 
-> **Note:** the seeded room-type names and rates for Khartoum are placeholders.
-> Update them from the **Room types & rates** screen with the real Kanon rate
-> card (the hotel has 124 en-suite rooms across six categories).
+> **Note:** Khartoum room types and USD rates follow the official Kanon rate
+> card. A starter inventory of 75 rooms is seeded using the real numbering
+> pattern; extend to the full 124 from the Rooms screen.
 
 ## API overview
 

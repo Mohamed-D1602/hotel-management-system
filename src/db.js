@@ -152,7 +152,13 @@ function seed() {
 
     const khartoumId = insertProperty.run(
       brandId, "Kanon Hotel Khartoum", "Khartoum", "Sudan",
-      "Street 15, Al-Amarat, P.O. Box 2425", "", "SDG", "Africa/Khartoum"
+      "15th Street, Al-Amarat, P.O. Box 2425",
+      "+249 183 59 59 59 / +249 183 59 55 55", "USD", "Africa/Khartoum"
+    ).lastInsertRowid;
+
+    const suitesId = insertProperty.run(
+      brandId, "Kanon Hotel Suites", "Khartoum", "Sudan",
+      "37th Street, Khartoum 2", "+249 183 58 88 88", "USD", "Africa/Khartoum"
     ).lastInsertRowid;
 
     const makkahId = insertProperty.run(
@@ -160,37 +166,49 @@ function seed() {
       "", "", "SAR", "Asia/Riyadh"
     ).lastInsertRowid;
 
-    // Sample room types — replace names and rates with the real Kanon rate card.
+    // Real Kanon Hotel Khartoum rate card (rates in USD, inclusive of service & taxes)
     const insertType = db.prepare(`
       INSERT INTO room_types (property_id, name, description, capacity, base_rate)
       VALUES (?, ?, ?, ?, ?)`);
 
     const khartoumTypes = [
-      ["Standard Single", "En-suite single room", 1, 0],
-      ["Standard Double", "En-suite double room", 2, 0],
-      ["Twin Room", "Two single beds, en-suite", 2, 0],
-      ["Junior Suite", "Sitting area and en-suite bathroom", 2, 0],
-      ["Executive Suite", "Separate lounge, en-suite", 3, 0],
-      ["Royal Suite", "Premier suite", 4, 0],
+      ["Single Room", "En-suite single room (rooms x02, x04, x05)", 1, 200],
+      ["Deluxe Room", "En-suite deluxe room (rooms x03, x06, x07)", 2, 220],
+      ["Superior Single", "Corner single, floors 5-10 (rooms x01)", 1, 250],
+      ["Superior Double", "Spacious double (rooms 301, 401)", 2, 270],
+      ["Executive Twin", "Twin double for two guests (rooms x08)", 2, 250],
+      ["11th Floor Deluxe", "Top-floor rooms 1101-1103 with city views", 2, 300],
     ];
-    const typeIds = khartoumTypes.map(t => insertType.run(khartoumId, ...t).lastInsertRowid);
+    const typeByName = {};
+    khartoumTypes.forEach(t => {
+      typeByName[t[0]] = insertType.run(khartoumId, ...t).lastInsertRowid;
+    });
 
+    insertType.run(suitesId, "Suite", "En-suite hotel suite", 2, 0);
     insertType.run(makkahId, "Standard Room", "En-suite room", 2, 0);
     insertType.run(makkahId, "Suite", "Suite with lounge", 3, 0);
 
-    // Sample rooms for Khartoum (a starter block per floor; the hotel has 124
-    // en-suite rooms — add the rest from the Rooms screen or the API).
+    // Starter room inventory following the real numbering pattern.
+    // The hotel has 124 en-suite rooms — extend from the Rooms screen as needed.
     const insertRoom = db.prepare(`
       INSERT INTO rooms (property_id, room_type_id, number, floor)
       VALUES (?, ?, ?, ?)`);
-    let n = 0;
-    for (let floor = 1; floor <= 4; floor++) {
-      for (let i = 1; i <= 6; i++) {
-        const typeId = typeIds[n % typeIds.length];
-        insertRoom.run(khartoumId, typeId, `${floor}${String(i).padStart(2, "0")}`, floor);
-        n++;
+    const typeForRoom = (floor, suffix) => {
+      if (["02", "04", "05"].includes(suffix)) return typeByName["Single Room"];
+      if (["03", "06", "07"].includes(suffix)) return typeByName["Deluxe Room"];
+      if (suffix === "08") return typeByName["Executive Twin"];
+      if (suffix === "01") {
+        return floor >= 5 ? typeByName["Superior Single"] : typeByName["Superior Double"];
+      }
+      return typeByName["Deluxe Room"];
+    };
+    for (let floor = 2; floor <= 10; floor++) {
+      for (const suffix of ["01", "02", "03", "04", "05", "06", "07", "08"]) {
+        insertRoom.run(khartoumId, typeForRoom(floor, suffix), `${floor}${suffix}`, floor);
       }
     }
+    ["1101", "1102", "1103"].forEach(n =>
+      insertRoom.run(khartoumId, typeByName["11th Floor Deluxe"], n, 11));
 
     // Default admin — change this password immediately after first login.
     db.prepare(`

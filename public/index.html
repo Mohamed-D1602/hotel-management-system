@@ -13,10 +13,14 @@
 <body>
 
 <header class="top">
-  <div class="wordmark">
-    <span class="wordmark-ar">فندق كنون</span>
-    <span class="wordmark-en">KANON HOTELS</span>
-  </div>
+  <a class="wordmark" href="#top">
+    <span class="logo-mark"><svg viewBox="0 0 120 120" fill="none"><g fill="currentColor"><path d="M46 88 C44 56 50 30 68 12 C62 34 60 60 62 88 Z"/><path d="M66 88 C68 62 76 44 94 32 C84 50 80 68 80 88 Z" opacity=".82"/><path d="M40 88 C40 62 44 40 54 24 L57 26 C48 42 45 63 45 88 Z" opacity=".55"/><rect x="22" y="92" width="76" height="4" rx="2"/><rect x="34" y="102" width="52" height="3" rx="1.5" opacity=".6"/></g></svg></span>
+    <span class="wordmark-text">
+      <span class="wordmark-ar">فندق كنون</span>
+      <span class="wordmark-en">KANON HOTEL</span>
+      <span class="stars">★ ★ ★ ★</span>
+    </span>
+  </a>
   <nav class="top-nav">
     <a href="#hotels">Our hotels</a>
     <a href="#stay">Rooms</a>
@@ -28,8 +32,8 @@
 </header>
 
 <!-- ============================ hero ============================ -->
-<section class="hero">
-  <div class="hero-inner">
+<section class="hero" id="top">
+  <div class="hero-inner rise">
     <p class="hero-eyebrow">Khartoum · Makkah</p>
     <h1>Where the two Niles meet,<br />hospitality begins.</h1>
     <p class="hero-sub">Kanon Hotels welcomes you in the heart of Khartoum —
@@ -44,7 +48,7 @@
   </div>
 
   <!-- booking bar -->
-  <form id="search-form" class="booking-bar" aria-label="Check availability">
+  <form id="search-form" class="booking-bar rise-late" aria-label="Check availability">
     <label>Hotel
       <select id="search-hotel" required></select>
     </label>
@@ -84,11 +88,20 @@
     <article class="hotel-card">
       <div class="hotel-mark">خ</div>
       <h3>Kanon Hotel Khartoum</h3>
-      <p class="hotel-place">Street 15, Al-Amarat · Khartoum, Sudan</p>
+      <p class="hotel-place">15th Street, Al-Amarat · Khartoum, Sudan</p>
       <p>124 en-suite rooms in the diplomatic quarter of Al-Amarat, with the
-         Dan Restaurant's Indian and international kitchen, Bawga Coffee Shop,
-         Kanon Café, a fitness suite with sauna and steam room, and four
-         conference halls for business and celebration.</p>
+         Dan Restaurant's Indian and international kitchen, two coffee shops,
+         a fitness suite with sauna and steam room, and four named conference
+         halls for business and celebration.</p>
+      <p class="hotel-tel">☎ +249 183 59 59 59 · +249 183 59 55 55</p>
+    </article>
+    <article class="hotel-card">
+      <div class="hotel-mark">س</div>
+      <h3>Kanon Hotel Suites</h3>
+      <p class="hotel-place">37th Street, Khartoum 2 · Sudan</p>
+      <p>Our suites property in Khartoum 2 — generous space and the same
+         Kanon welcome, minutes from the city centre.</p>
+      <p class="hotel-tel">☎ +249 183 58 88 88</p>
     </article>
     <article class="hotel-card">
       <div class="hotel-mark">م</div>
@@ -113,11 +126,11 @@
     <img src="/img/cafe-lounge.jpg" alt="Bawga Coffee Shop lounge" loading="lazy" />
   </div>
   <div class="amenity-row">
-    <div class="amenity"><span class="amenity-title">Dan Restaurant</span>Indian &amp; international cuisine</div>
+    <div class="amenity"><span class="amenity-title">Dan Restaurant</span>Indian &amp; international cuisine<br/>☎ +249 123 0 44444</div>
     <div class="amenity"><span class="amenity-title">Bawga Coffee Shop</span>Coffee, sweets &amp; conversation</div>
     <div class="amenity"><span class="amenity-title">Kanon Café</span>Light dining through the day</div>
     <div class="amenity"><span class="amenity-title">Wellness</span>Gym · sauna · steam room</div>
-    <div class="amenity"><span class="amenity-title">Meetings</span>Four conference halls</div>
+    <div class="amenity"><span class="amenity-title">Four Conference Halls</span>Dan Hall · Bawga Hall · VIP Meeting Hall · Kanon Hall</div>
   </div>
 </section>
 
@@ -141,14 +154,22 @@
   <div class="footer-grid">
     <div>
       <div class="wordmark footer-wordmark">
-        <span class="wordmark-ar">فندق كنون</span>
-        <span class="wordmark-en">KANON HOTELS</span>
+        <span class="logo-mark"><svg viewBox="0 0 120 120" fill="none"><g fill="currentColor"><path d="M46 88 C44 56 50 30 68 12 C62 34 60 60 62 88 Z"/><path d="M66 88 C68 62 76 44 94 32 C84 50 80 68 80 88 Z" opacity=".82"/><path d="M40 88 C40 62 44 40 54 24 L57 26 C48 42 45 63 45 88 Z" opacity=".55"/><rect x="22" y="92" width="76" height="4" rx="2"/><rect x="34" y="102" width="52" height="3" rx="1.5" opacity=".6"/></g></svg></span>
+        <span class="wordmark-text">
+          <span class="wordmark-ar">فندق كنون</span>
+          <span class="wordmark-en">KANON HOTEL</span>
+          <span class="stars">★ ★ ★ ★</span>
+        </span>
       </div>
       <p>A Kanon Group company</p>
     </div>
     <div>
-      <h4>Khartoum</h4>
-      <p>Street 15, Al-Amarat<br />P.O. Box 2425, Khartoum, Sudan</p>
+      <h4>Kanon Hotel</h4>
+      <p>15th Street, Al-Amarat<br />P.O. Box 2425, Khartoum, Sudan<br />☎ +249 183 59 59 59</p>
+    </div>
+    <div>
+      <h4>Kanon Hotel Suites</h4>
+      <p>37th Street, Khartoum 2<br />☎ +249 183 58 88 88</p>
     </div>
     <div>
       <h4>Makkah</h4>

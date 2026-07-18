@@ -54,12 +54,25 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
   display: flex; align-items: center; justify-content: space-between;
   padding: 22px clamp(20px, 5vw, 56px); color: var(--ivory);
 }
-.wordmark { display: flex; flex-direction: column; line-height: 1.15; }
+.wordmark { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+.wordmark-text { display: flex; flex-direction: column; line-height: 1.15; }
+.logo-mark { width: 46px; height: 46px; color: var(--gold); flex-shrink: 0; }
+.logo-mark svg { width: 100%; height: 100%; }
+.stars { color: var(--gold); font-size: 11px; letter-spacing: .4em; margin-top: 2px; }
 .wordmark-ar { font-size: 22px; }
 .wordmark-en {
   font-family: var(--display); font-size: 13px; letter-spacing: .34em;
   color: var(--gold-soft);
 }
+
+/* entrance animation */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: riseIn .9s ease-out both; }
+.rise-late { animation: riseIn .9s ease-out .35s both; }
+.hero .logo-hero { width: 90px; color: var(--gold); margin-bottom: 20px; }
 .top-nav { display: flex; gap: 26px; align-items: center; flex-wrap: wrap; }
 .top-nav a {
   text-decoration: none; font-size: 13px; letter-spacing: .14em;
@@ -264,4 +277,22 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; }
+}
+
+/* ---------------- flashy extras ---------------- */
+.hotel-tel { color: var(--gold-soft); font-size: 14px; margin: 12px 0 0; }
+.section-deep .hotel-card { transition: transform .3s, box-shadow .3s; }
+.section-deep .hotel-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+.room-card { transition: transform .3s, box-shadow .3s; }
+.room-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(11,31,26,.15); }
+.btn-gold { position: relative; overflow: hidden; }
+.btn-gold::after {
+  content: ""; position: absolute; top: 0; left: -80%; width: 50%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent);
+  transform: skewX(-20deg); transition: left .5s;
+}
+.btn-gold:hover::after { left: 130%; }
+@media (prefers-reduced-motion: reduce) {
+  .rise, .rise-late { animation: none; }
+  .btn-gold::after { display: none; }
 }
