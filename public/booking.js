@@ -237,3 +237,15 @@ function confirmationModal(out, type, hotel) {
     $("#search-form").requestSubmit(); // refresh availability
   });
 }
+
+// ---------------------------------------------------------------- flash: scroll effects
+(function () {
+  const top = document.querySelector(".top");
+  window.addEventListener("scroll", () =>
+    top.classList.toggle("scrolled", window.scrollY > 40), { passive: true });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("visible"); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".reveal").forEach((s) => io.observe(s));
+})();

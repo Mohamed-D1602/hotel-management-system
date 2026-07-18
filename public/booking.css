@@ -85,9 +85,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 
 /* ---------------- hero ---------------- */
 .hero {
-  background:
-    linear-gradient(165deg, rgba(11,31,26,.88) 0%, rgba(20,50,41,.82) 100%),
-    url('/img/room-suite.jpg') center 35%/cover no-repeat;
+  background: var(--night);
   color: var(--ivory);
   padding: 150px clamp(20px, 5vw, 56px) 110px;
   position: relative;
@@ -295,4 +293,69 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 @media (prefers-reduced-motion: reduce) {
   .rise, .rise-late { animation: none; }
   .btn-gold::after { display: none; }
+}
+
+/* ---------------- FLASH UPGRADE ---------------- */
+/* hero: giant glowing logo */
+.logo-hero { text-align: left; margin-bottom: 26px; }
+.logo-hero svg {
+  width: 120px; height: 120px; color: var(--gold);
+  filter: drop-shadow(0 0 18px rgba(201,162,75,.55));
+  animation: logoGlow 3.2s ease-in-out infinite alternate;
+}
+.logo-hero-name {
+  font-family: var(--display); font-size: 24px; letter-spacing: .42em;
+  color: var(--gold-soft); margin-top: 6px;
+}
+.stars-big { font-size: 16px; letter-spacing: .5em; animation: twinkle 2.6s infinite; }
+@keyframes logoGlow {
+  from { filter: drop-shadow(0 0 10px rgba(201,162,75,.35)); transform: scale(1); }
+  to   { filter: drop-shadow(0 0 26px rgba(201,162,75,.8)); transform: scale(1.03); }
+}
+@keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+
+/* hero headline: liquid-gold shimmer */
+.hero h1 {
+  background: linear-gradient(100deg, var(--ivory) 30%, var(--gold-soft) 50%, var(--ivory) 70%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: shimmer 5.5s linear infinite;
+}
+@keyframes shimmer { from { background-position: 220% 0; } to { background-position: -20% 0; } }
+
+/* hero: slow cinematic zoom on the photo */
+.hero { overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -6%;
+  background: url('/img/room-suite.jpg') center 35%/cover no-repeat;
+  animation: kenburns 22s ease-in-out infinite alternate;
+  z-index: 0;
+}
+.hero::after {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(165deg, rgba(11,31,26,.88) 0%, rgba(20,50,41,.8) 100%);
+}
+.hero > * { position: relative; z-index: 2; }
+@keyframes kenburns { from { transform: scale(1); } to { transform: scale(1.09); } }
+
+/* sticky glass header once you scroll */
+.top { position: fixed; transition: background .35s, box-shadow .35s, padding .35s; }
+.top.scrolled {
+  background: rgba(11,31,26,.92); backdrop-filter: blur(8px);
+  box-shadow: 0 6px 24px rgba(0,0,0,.35); padding-top: 12px; padding-bottom: 12px;
+}
+
+/* scroll-reveal sections */
+.reveal { opacity: 0; transform: translateY(34px); transition: opacity .8s ease, transform .8s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* gold-frame gallery hover */
+.gallery-grid figure { outline: 1px solid transparent; transition: outline-color .3s; }
+.gallery-grid figure:hover { outline: 2px solid var(--gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-hero svg, .stars-big, .hero h1, .hero::before { animation: none; }
+  .hero h1 { -webkit-text-fill-color: var(--ivory); color: var(--ivory); background: none; }
+  .reveal { opacity: 1; transform: none; }
 }
