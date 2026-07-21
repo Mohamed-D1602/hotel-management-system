@@ -328,34 +328,54 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 .hero-center .hero-sub { margin-left: auto; margin-right: auto; }
 .hero-center .hero-cta { justify-content: center; }
 
-/* logo row with flashy flanking badges */
-.crest-logo-row {
-  display: flex; align-items: center; justify-content: center; gap: 20px;
+/* logo with badges positioned around it */
+.crest-logo-wrap {
+  position: relative; width: 320px; height: 168px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
 }
-.crest-logo { width: 120px; height: 120px; color: var(--gold); flex-shrink: 0;
-  filter: drop-shadow(0 0 22px rgba(201,162,75,.6));
-  animation: logoGlow 3.2s ease-in-out infinite alternate; }
+.crest-logo {
+  width: 118px; height: 118px; color: var(--gold); position: relative; z-index: 2;
+  filter: drop-shadow(0 0 24px rgba(201,162,75,.65));
+  animation: logoGlow 3.2s ease-in-out infinite alternate;
+}
+/* soft rotating gold halo behind the logo */
+.halo {
+  position: absolute; width: 150px; height: 150px; border-radius: 50%; z-index: 1;
+  background: conic-gradient(from 0deg, transparent, rgba(201,162,75,.35), transparent 40%,
+    transparent 60%, rgba(201,162,75,.35), transparent);
+  filter: blur(6px); animation: haloSpin 9s linear infinite;
+}
+@keyframes haloSpin { to { transform: rotate(360deg); } }
+
 .lb {
-  position: relative; overflow: hidden; flex-shrink: 0;
-  font-family: var(--caps); font-size: 11px; letter-spacing: .12em;
+  position: absolute; overflow: hidden;
+  font-family: var(--caps); font-size: 10.5px; letter-spacing: .14em;
   text-transform: uppercase; color: var(--night); font-weight: 600;
-  background: linear-gradient(120deg, var(--gold), var(--gold-soft));
-  padding: 7px 14px; border-radius: 999px; white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0,0,0,.3);
-  animation: lbFade 4s ease-in-out infinite, lbBob 5s ease-in-out infinite;
+  background: linear-gradient(120deg, #dcb45c, #f2e2b4 55%, #dcb45c);
+  padding: 6px 13px; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.25) inset;
+  z-index: 3;
+  animation: lbFade 4.5s ease-in-out infinite, lbBob 5.5s ease-in-out infinite;
 }
+/* four corners around the logo */
+.lb-tl { top: 6px;   left: -6px;  animation-delay: 0s,   0s;  }
+.lb-tr { top: 6px;   right: -6px; animation-delay: .5s, .4s; }
+.lb-bl { bottom: 6px; left: -6px;  animation-delay: 1s,  .8s; }
+.lb-br { bottom: 6px; right: -6px; animation-delay: 1.5s,1.2s; }
+
+/* elegant glitter sweep */
 .lb::after {
-  content: ""; position: absolute; top: 0; left: -120%; width: 55%; height: 100%;
-  background: linear-gradient(100deg, transparent, rgba(255,255,255,.9), transparent);
-  transform: skewX(-20deg); animation: lbGlitter 3s ease-in-out infinite;
+  content: ""; position: absolute; top: 0; left: -130%; width: 60%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.95), transparent);
+  transform: skewX(-20deg); animation: lbGlitter 3.4s ease-in-out infinite;
 }
-.lb-l1 { animation-delay: 0s, 0s; } .lb-l1::after { animation-delay: 0s; }
-.lb-l2 { animation-delay: .6s, .4s; } .lb-l2::after { animation-delay: .7s; }
-.lb-r1 { animation-delay: 1.2s, .8s; } .lb-r1::after { animation-delay: 1.4s; }
-.lb-r2 { animation-delay: 1.8s, 1.2s; } .lb-r2::after { animation-delay: 2.1s; }
-@keyframes lbFade { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
-@keyframes lbBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-@keyframes lbGlitter { 0% { left: -120%; } 55%,100% { left: 170%; } }
+.lb-tr::after { animation-delay: .6s; }
+.lb-bl::after { animation-delay: 1.2s; }
+.lb-br::after { animation-delay: 1.8s; }
+
+@keyframes lbFade { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+@keyframes lbBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes lbGlitter { 0% { left: -130%; } 55%,100% { left: 175%; } }
 
 /* hero: crest at top center */
 .hero-crest-top { text-align: center; margin: 0 auto 20px; }
@@ -570,7 +590,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 }
 
 @media (max-width: 760px) {
-  .crest-logo-row .lb { display: none; }
+  .crest-logo-wrap .lb { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .lb { animation: none; opacity: 1; } .lb::after { display: none; }
