@@ -94,7 +94,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
     radial-gradient(800px 500px at -10% 110%, rgba(29,68,54,.9), transparent 60%),
     linear-gradient(160deg, #0b1f1a 0%, #143229 70%, #16382e 100%);
   color: var(--ivory);
-  padding: 92px clamp(20px, 5vw, 56px) 84px;
+  padding: 84px clamp(20px, 5vw, 40px) 70px;
   position: relative;
 }
 
@@ -320,7 +320,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 /* ---------------- FLASH UPGRADE ---------------- */
 /* hero: single centered column */
 .hero-center {
-  max-width: 780px; margin: 0 auto; text-align: center;
+  max-width: 1100px; margin: 0 auto; text-align: center;
   position: relative; z-index: 3;
 }
 .hero-center .hero-eyebrow { margin-top: 4px; }
@@ -348,20 +348,15 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 @keyframes haloSpin { to { transform: rotate(360deg); } }
 
 .lb {
-  position: absolute; overflow: hidden;
-  font-family: var(--caps); font-size: 10.5px; letter-spacing: .14em;
+  position: relative; overflow: hidden;
+  font-family: var(--caps); font-size: 12px; letter-spacing: .14em;
   text-transform: uppercase; color: var(--night); font-weight: 600;
   background: linear-gradient(120deg, #dcb45c, #f2e2b4 55%, #dcb45c);
-  padding: 6px 13px; border-radius: 999px; white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.25) inset;
+  padding: 9px 16px; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.25) inset;
   z-index: 3;
   animation: lbFade 4.5s ease-in-out infinite, lbBob 5.5s ease-in-out infinite;
 }
-/* four corners around the logo */
-.lb-tl { top: 6px;   left: -6px;  animation-delay: 0s,   0s;  }
-.lb-tr { top: 6px;   right: -6px; animation-delay: .5s, .4s; }
-.lb-bl { bottom: 6px; left: -6px;  animation-delay: 1s,  .8s; }
-.lb-br { bottom: 6px; right: -6px; animation-delay: 1.5s,1.2s; }
 
 /* elegant glitter sweep */
 .lb::after {
@@ -376,6 +371,22 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 @keyframes lbFade { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
 @keyframes lbBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 @keyframes lbGlitter { 0% { left: -130%; } 55%,100% { left: 175%; } }
+
+/* hero side badge stacks (fill empty space) */
+.hero-side {
+  position: absolute; top: 46%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 20px; z-index: 3; pointer-events: none;
+}
+.hero-side-l { left: clamp(16px, 5vw, 90px); align-items: flex-start; }
+.hero-side-r { right: clamp(16px, 5vw, 90px); align-items: flex-end; }
+.hero-side .lb:nth-child(1){ animation-delay: 0s, 0s; }
+.hero-side .lb:nth-child(2){ animation-delay: .5s, .4s; }
+.hero-side .lb:nth-child(3){ animation-delay: 1s, .8s; }
+.hero-side .lb:nth-child(4){ animation-delay: 1.5s, 1.2s; }
+.hero-side-r .lb:nth-child(1){ animation-delay: .3s, .2s; }
+.hero-side-r .lb:nth-child(2){ animation-delay: .8s, .6s; }
+.hero-side-r .lb:nth-child(3){ animation-delay: 1.3s, 1s; }
+.hero-side-r .lb:nth-child(4){ animation-delay: 1.8s, 1.4s; }
 
 /* hero: crest at top center */
 .hero-crest-top { text-align: center; margin: 0 auto 20px; }
@@ -589,8 +600,8 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
   #gold-dust { display: none; }
 }
 
-@media (max-width: 760px) {
-  .crest-logo-wrap .lb { display: none; }
+@media (max-width: 1250px) {
+  .hero-side { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .lb { animation: none; opacity: 1; } .lb::after { display: none; }
