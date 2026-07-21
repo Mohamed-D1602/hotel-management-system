@@ -301,15 +301,6 @@ function confirmationModal(out, type, hotel) {
     bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
   }, { passive: true });
 
-  // headline: word-by-word rise
-  const h1 = document.querySelector(".hero h1");
-  if (h1 && !reduced) {
-    h1.innerHTML = h1.innerHTML.split(/<br\s*\/?>/i).map((line) =>
-      line.trim().split(/\s+/).map((w) => `<span class="w">${w}</span>`).join(" ")
-    ).join("<br/>");
-    h1.querySelectorAll(".w").forEach((w, i) => (w.style.animationDelay = (0.25 + i * 0.09) + "s"));
-  }
-
   // gold dust particles
   const canvas = document.getElementById("gold-dust");
   if (canvas && !reduced) {
