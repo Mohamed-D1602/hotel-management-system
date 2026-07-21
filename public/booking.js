@@ -282,3 +282,76 @@ function confirmationModal(out, type, hotel) {
   }, { threshold: 0.4 });
   nums.forEach((n) => io.observe(n));
 })();
+
+// ---------------------------------------------------------------- flash L3
+(function () {
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // splash intro
+  const splash = document.getElementById("splash");
+  if (splash) setTimeout(() => splash.classList.add("done"), reduced ? 0 : 1500);
+
+  // scroll progress bar
+  const bar = document.getElementById("scroll-progress");
+  window.addEventListener("scroll", () => {
+    const h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  }, { passive: true });
+
+  // headline: word-by-word rise
+  const h1 = document.querySelector(".hero h1");
+  if (h1 && !reduced) {
+    h1.innerHTML = h1.innerHTML.split(/<br\s*\/?>/i).map((line) =>
+      line.trim().split(/\s+/).map((w) => `<span class="w">${w}</span>`).join(" ")
+    ).join("<br/>");
+    h1.querySelectorAll(".w").forEach((w, i) => (w.style.animationDelay = (0.25 + i * 0.09) + "s"));
+  }
+
+  // gold dust particles
+  const canvas = document.getElementById("gold-dust");
+  if (canvas && !reduced) {
+    const ctx = canvas.getContext("2d");
+    let W, H, dots;
+    const resize = () => {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+      dots = Array.from({ length: 42 }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        r: 0.6 + Math.random() * 1.8,
+        vy: 0.12 + Math.random() * 0.3, vx: (Math.random() - 0.5) * 0.15,
+        tw: Math.random() * Math.PI * 2,
+      }));
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    (function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      for (const d of dots) {
+        d.y -= d.vy; d.x += d.vx; d.tw += 0.03;
+        if (d.y < -4) { d.y = H + 4; d.x = Math.random() * W; }
+        const a = 0.25 + 0.45 * (0.5 + Math.sin(d.tw) / 2);
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(222,184,106,${a})`;
+        ctx.shadowColor = "rgba(201,162,75,.8)"; ctx.shadowBlur = 6;
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    })();
+  }
+
+  // 3D tilt on cards
+  if (!reduced && matchMedia("(hover: hover)").matches) {
+    document.addEventListener("mousemove", (e) => {
+      const card = e.target.closest(".room-card, .gallery-grid figure");
+      document.querySelectorAll(".room-card, .gallery-grid figure").forEach((c) => {
+        if (c !== card) c.style.transform = "";
+      });
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      const rx = ((e.clientY - r.top) / r.height - 0.5) * -7;
+      const ry = ((e.clientX - r.left) / r.width - 0.5) * 7;
+      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+    });
+  }
+})();

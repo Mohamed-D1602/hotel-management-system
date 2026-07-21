@@ -11,6 +11,14 @@
 <link rel="stylesheet" href="/booking.css" />
 </head>
 <body>
+<div id="splash" aria-hidden="true">
+  <div class="splash-inner">
+    <svg viewBox="0 0 120 120" fill="none"><g fill="currentColor"><path d="M46 88 C44 56 50 30 68 12 C62 34 60 60 62 88 Z"/><path d="M66 88 C68 62 76 44 94 32 C84 50 80 68 80 88 Z" opacity=".82"/><path d="M40 88 C40 62 44 40 54 24 L57 26 C48 42 45 63 45 88 Z" opacity=".55"/><rect x="22" y="92" width="76" height="4" rx="2"/><rect x="34" y="102" width="52" height="3" rx="1.5" opacity=".6"/></g></svg>
+    <div class="splash-name">KANON HOTEL</div>
+    <div class="splash-ar">فندق كنون</div>
+  </div>
+</div>
+<div id="scroll-progress" aria-hidden="true"></div>
 
 <header class="top">
   <a class="wordmark" href="#top">
@@ -33,6 +41,7 @@
 
 <!-- ============================ hero ============================ -->
 <section class="hero" id="top">
+  <canvas id="gold-dust" aria-hidden="true"></canvas>
   <div class="hero-slides" aria-hidden="true">
     <div class="slide active" style="background-image:url('/img/room-suite.jpg')"></div>
     <div class="slide" style="background-image:url('/img/conference-1.jpg')"></div>
@@ -80,6 +89,14 @@
     <button type="submit" class="btn-gold">Check availability</button>
   </form>
 </section>
+
+<!-- ============================ marquee ============================ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>DAN RESTAURANT ✦ BAWGA COFFEE SHOP ✦ KANON CAFÉ ✦ GYM · SAUNA · STEAM ✦ DAN HALL ✦ BAWGA HALL ✦ VIP MEETING HALL ✦ KANON HALL ✦ 124 EN-SUITE ROOMS ✦ KHARTOUM ✦ MAKKAH ✦&nbsp;</span>
+    <span>DAN RESTAURANT ✦ BAWGA COFFEE SHOP ✦ KANON CAFÉ ✦ GYM · SAUNA · STEAM ✦ DAN HALL ✦ BAWGA HALL ✦ VIP MEETING HALL ✦ KANON HALL ✦ 124 EN-SUITE ROOMS ✦ KHARTOUM ✦ MAKKAH ✦&nbsp;</span>
+  </div>
+</div>
 
 <!-- ============================ counters ============================ -->
 <section class="counters reveal">
