@@ -255,7 +255,7 @@ function confirmationModal(out, type, hotel) {
 
 // ---------------------------------------------------------------- flash: hero slideshow
 (function () {
-  const slides = document.querySelectorAll(".hero-slides .slide");
+  const slides = document.querySelectorAll(".hero-bg .hero-slide");
   if (slides.length > 1) {
     let i = 0;
     setInterval(() => {
