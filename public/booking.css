@@ -328,13 +328,38 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 .hero-center .hero-sub { margin-left: auto; margin-right: auto; }
 .hero-center .hero-cta { justify-content: center; }
 
+/* logo row with flashy flanking badges */
+.crest-logo-row {
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+}
+.crest-logo { width: 120px; height: 120px; color: var(--gold); flex-shrink: 0;
+  filter: drop-shadow(0 0 22px rgba(201,162,75,.6));
+  animation: logoGlow 3.2s ease-in-out infinite alternate; }
+.lb {
+  position: relative; overflow: hidden; flex-shrink: 0;
+  font-family: var(--caps); font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--night); font-weight: 600;
+  background: linear-gradient(120deg, var(--gold), var(--gold-soft));
+  padding: 7px 14px; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0,0,0,.3);
+  animation: lbFade 4s ease-in-out infinite, lbBob 5s ease-in-out infinite;
+}
+.lb::after {
+  content: ""; position: absolute; top: 0; left: -120%; width: 55%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.9), transparent);
+  transform: skewX(-20deg); animation: lbGlitter 3s ease-in-out infinite;
+}
+.lb-l1 { animation-delay: 0s, 0s; } .lb-l1::after { animation-delay: 0s; }
+.lb-l2 { animation-delay: .6s, .4s; } .lb-l2::after { animation-delay: .7s; }
+.lb-r1 { animation-delay: 1.2s, .8s; } .lb-r1::after { animation-delay: 1.4s; }
+.lb-r2 { animation-delay: 1.8s, 1.2s; } .lb-r2::after { animation-delay: 2.1s; }
+@keyframes lbFade { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
+@keyframes lbBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes lbGlitter { 0% { left: -120%; } 55%,100% { left: 170%; } }
+
 /* hero: crest at top center */
 .hero-crest-top { text-align: center; margin: 0 auto 20px; }
-.hero-crest-top svg {
-  width: 120px; height: 120px; color: var(--gold);
-  filter: drop-shadow(0 0 22px rgba(201,162,75,.6));
-  animation: logoGlow 3.2s ease-in-out infinite alternate;
-}
+
 .crest-name {
   font-family: var(--caps); font-size: 26px; letter-spacing: .46em;
   color: var(--gold-soft); margin-top: 8px; padding-left: .46em;
@@ -542,4 +567,11 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
   #splash { display: none; }
   .booking-bar::before, .marquee-track { animation: none; }
   #gold-dust { display: none; }
+}
+
+@media (max-width: 760px) {
+  .crest-logo-row .lb { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lb { animation: none; opacity: 1; } .lb::after { display: none; }
 }
