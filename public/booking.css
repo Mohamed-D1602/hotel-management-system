@@ -97,7 +97,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
     radial-gradient(800px 500px at -10% 110%, rgba(29,68,54,.9), transparent 60%),
     linear-gradient(160deg, #0b1f1a 0%, #143229 70%, #16382e 100%);
   color: var(--ivory);
-  padding: 118px clamp(20px, 5vw, 56px) 84px;
+  padding: 130px clamp(20px, 5vw, 56px) 90px;
   position: relative;
 }
 .hero-grid {
@@ -326,37 +326,27 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 }
 
 /* ---------------- FLASH UPGRADE ---------------- */
-/* hero: centered crest */
+/* hero: crest lockup (left-aligned, above headline) */
 .hero-crest {
-  text-align: center; position: relative; z-index: 3;
-  max-width: 1180px; margin: 0 auto 34px;
+  display: flex; align-items: center; gap: 18px; margin-bottom: 26px;
 }
 .hero-crest svg {
-  width: 132px; height: 132px; color: var(--gold);
-  filter: drop-shadow(0 0 22px rgba(201,162,75,.6));
+  width: 72px; height: 72px; color: var(--gold); flex-shrink: 0;
+  filter: drop-shadow(0 0 16px rgba(201,162,75,.5));
   animation: logoGlow 3.2s ease-in-out infinite alternate;
 }
+.crest-text { display: flex; flex-direction: column; line-height: 1.2; }
 .crest-name {
-  font-family: var(--caps); font-size: 26px; letter-spacing: .48em;
-  color: var(--gold-soft); margin-top: 10px; padding-left: .48em; /* balance tracking */
+  font-family: var(--caps); font-size: 20px; letter-spacing: .34em;
+  color: var(--gold-soft); padding-left: .34em;
 }
 .crest-ar {
-  font-family: var(--arabic); font-size: 30px; color: var(--ivory);
-  margin-top: 2px;
+  font-family: var(--arabic); font-size: 24px; color: var(--ivory); margin-top: 2px;
 }
-.crest-rule {
-  width: 180px; height: 1px; margin: 16px auto 0;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+.stars-big {
+  display: block; font-size: 12px; letter-spacing: .4em; padding-left: .4em;
+  margin-top: 4px; animation: twinkle 2.6s infinite;
 }
-.stars-big { display:block; font-size: 15px; letter-spacing: .6em; padding-left: .6em; margin-top: 6px; animation: twinkle 2.6s infinite; }
-@keyframes logoGlow {
-  from { filter: drop-shadow(0 0 10px rgba(201,162,75,.35)); transform: scale(1); }
-  to   { filter: drop-shadow(0 0 26px rgba(201,162,75,.8)); transform: scale(1.03); }
-}
-@keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
-
-/* hero headline */
-.hero h1 { color: var(--ivory); }
 
 /* hero photo collage */
 .hero-collage { position: relative; height: 460px; align-self: center; }
