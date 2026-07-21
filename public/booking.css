@@ -5,18 +5,18 @@
    (two gold lines meeting — the Blue and White Nile).
    ============================================================ */
 :root {
-  --night: #0b1f1a;
-  --palm: #143229;
-  --palm-soft: #1d4436;
-  --gold: #c9a24b;
-  --gold-soft: #e8d5a6;
-  --ivory: #f6f1e6;
-  --ink: #22271f;
-  --ink-soft: #5b6158;
-  --line: #d8d2c2;
+  --night: #101216;         /* near-black charcoal */
+  --palm: #16181d;
+  --palm-soft: #23262d;
+  --gold: #c8a45c;          /* champagne gold */
+  --gold-soft: #e6d3a3;
+  --ivory: #f4f1ea;         /* warm off-white */
+  --ink: #1a1c20;
+  --ink-soft: #6c7079;
+  --line: #e2ddd2;
   --display: "Cormorant Garamond", "Times New Roman", serif;
   --caps: "Cinzel", "Times New Roman", serif;
-  --body: "Montserrat", "Segoe UI", system-ui, sans-serif;
+  --body: "Manrope", "Montserrat", system-ui, sans-serif;
   --arabic: "Reem Kufi", "Aref Ruqaa", "Amiri", serif;
 }
 
@@ -42,11 +42,11 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 }
 
 .btn-gold {
-  background: var(--gold); color: var(--night); border: 0;
-  padding: 12px 26px; font-size: 15px; font-weight: 600; letter-spacing: .06em;
-  text-transform: uppercase; border-radius: 4px; transition: background .2s;
+  background: var(--gold); color: #14151a; border: 1px solid var(--gold);
+  padding: 15px 36px; font-size: 12px; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; border-radius: 2px; transition: all .25s;
 }
-.btn-gold:hover { background: var(--gold-soft); }
+.btn-gold:hover { background: transparent; color: var(--gold-soft); }
 .btn-quiet {
   background: transparent; border: 1px solid var(--line); color: var(--ink);
   padding: 11px 20px; border-radius: 4px; font-size: 15px;
@@ -107,8 +107,8 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 .hero-scrim {
   position: absolute; inset: 0; z-index: 1;
   background:
-    linear-gradient(180deg, rgba(11,31,26,.45) 0%, rgba(11,31,26,.15) 35%, rgba(11,31,26,.85) 100%),
-    linear-gradient(75deg, rgba(11,31,26,.6) 0%, rgba(11,31,26,.1) 55%, transparent 80%);
+    linear-gradient(180deg, rgba(16,18,22,.55) 0%, rgba(16,18,22,.12) 32%, rgba(16,18,22,.92) 100%),
+    linear-gradient(75deg, rgba(16,18,22,.75) 0%, rgba(16,18,22,.15) 55%, transparent 82%);
 }
 #gold-dust { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 
@@ -141,14 +141,19 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 @keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
 
 .hero-eyebrow {
-  font-family: var(--caps); letter-spacing: .42em; text-transform: uppercase;
-  font-size: 13px; color: var(--gold-soft); margin: 0 0 18px;
+  font-family: var(--body); letter-spacing: .34em; text-transform: uppercase;
+  font-size: 12px; font-weight: 600; color: var(--gold-soft);
+  margin: 0 0 22px; display: inline-flex; align-items: center; gap: 14px;
+}
+.hero-eyebrow::before {
+  content: ""; width: 46px; height: 1px; background: var(--gold);
 }
 .hero h1 {
-  font-family: var(--display); font-weight: 500;
-  font-size: clamp(44px, 7vw, 92px); line-height: 1.04; margin: 0 0 30px;
-  letter-spacing: -.01em; text-shadow: 0 2px 40px rgba(0,0,0,.5);
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(46px, 7.4vw, 100px); line-height: 1.02; margin: 0 0 32px;
+  letter-spacing: -.015em; text-shadow: 0 2px 46px rgba(0,0,0,.55);
 }
+.hero h1 em { font-style: italic; color: var(--gold-soft); }
 .hero-sub {
   font-size: 18px; color: rgba(246,241,230,.9); max-width: 540px; margin: 0 auto 30px;
   text-shadow: 0 1px 12px rgba(0,0,0,.5);
@@ -171,13 +176,19 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
 
 /* booking bar floats at the bottom of the hero */
 .booking-bar {
-  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-  z-index: 4; width: min(1060px, calc(100% - 40px));
-  background: rgba(246,241,230,.97); color: var(--ink);
-  border-radius: 10px; padding: 18px;
-  display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr auto; gap: 14px; align-items: end;
-  box-shadow: 0 30px 70px rgba(0,0,0,.5); border: 1px solid rgba(201,162,75,.5);
+  position: absolute; bottom: 0; left: 0; right: 0;
+  z-index: 4; width: 100%;
+  background: rgba(16,18,22,.72); backdrop-filter: blur(14px); color: var(--ivory);
+  border-radius: 0; padding: 20px clamp(24px,6vw,90px);
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr auto; gap: 18px; align-items: end;
+  border-top: 1px solid rgba(200,164,92,.35);
 }
+.booking-bar label { color: rgba(244,241,234,.65); }
+.booking-bar input, .booking-bar select {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.16);
+  color: var(--ivory);
+}
+.booking-bar input::-webkit-calendar-picker-indicator { filter: invert(.8); }
 .booking-bar label {
   font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
   color: var(--ink-soft); display: flex; flex-direction: column; gap: 6px;
