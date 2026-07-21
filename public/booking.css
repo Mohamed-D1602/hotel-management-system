@@ -59,6 +59,9 @@ input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible
   padding: 22px clamp(20px, 5vw, 56px); color: var(--ivory);
 }
 .wordmark { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+/* At the very top the hero already shows the big crest — keep only the sail icon here */
+.top:not(.scrolled) .wordmark-text { display: none; }
+.top.scrolled .wordmark-text { display: flex; }
 .wordmark-text { display: flex; flex-direction: column; line-height: 1.15; }
 .logo-mark { width: 46px; height: 46px; color: var(--gold); flex-shrink: 0; }
 .logo-mark svg { width: 100%; height: 100%; }
