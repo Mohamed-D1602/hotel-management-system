@@ -2,7 +2,7 @@
 // Guests can browse hotels, check availability, and create a booking.
 // Bookings arrive in the front-desk system with status 'booked'.
 
-const { db, reservationCode } = require("./db");
+const { db, reservationCode, logActivity } = require("./db");
 
 function isDate(s) {
   return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
@@ -122,6 +122,8 @@ function registerPublicRoutes(app) {
     });
 
     const code = tx();
+    logActivity(Number(property_id), "Online guest", "online_booking",
+      `${String(full_name).trim()} · ${check_in} → ${check_out} · ${type.name} · ${code}`);
     res.status(201).json({
       code, nights,
       nightly_rate: type.base_rate,

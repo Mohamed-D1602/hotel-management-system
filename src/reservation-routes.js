@@ -1,5 +1,5 @@
 // Reservations, availability, check-in / check-out, payments, dashboard.
-const { db, reservationCode } = require("./db");
+const { db, reservationCode, logActivity } = require("./db");
 const { requireAuth } = require("./auth");
 
 const OVERLAP_SQL = `
@@ -93,6 +93,9 @@ function registerReservationRoutes(app) {
       .run(reservationCode(), propertyId, room_id, room_type_id, guest_id,
            check_in, check_out, adults, children, rate, rate * nights, notes)
       .lastInsertRowid;
+    const guest = db.prepare("SELECT full_name FROM guests WHERE id = ?").get(guest_id);
+    logActivity(propertyId, req.user.name, "booking_created",
+      `${guest?.full_name || "Guest"} · ${check_in} → ${check_out} · ${type.name}`);
     res.status(201).json({ id, nights, total: rate * nights });
   });
 
@@ -121,6 +124,7 @@ function registerReservationRoutes(app) {
       db.prepare("UPDATE rooms SET status='occupied' WHERE id=?").run(roomId);
     });
     tx();
+    logActivity(r.property_id, req.user.name, "check_in", `Reservation ${r.code}`);
     res.json({ ok: true });
   });
 
@@ -138,6 +142,7 @@ function registerReservationRoutes(app) {
       }
     });
     tx();
+    logActivity(r.property_id, req.user.name, "check_out", `Reservation ${r.code}`);
     res.json({ ok: true });
   });
 
@@ -155,6 +160,7 @@ function registerReservationRoutes(app) {
       }
     });
     tx();
+    logActivity(r.property_id, req.user.name, "cancelled", `Reservation ${r.code}`);
     res.json({ ok: true });
   });
 
@@ -177,7 +183,58 @@ function registerReservationRoutes(app) {
       INSERT INTO payments (reservation_id, amount, method, reference)
       VALUES (?, ?, ?, ?)`)
       .run(r.id, amount, method, reference).lastInsertRowid;
+    logActivity(r.property_id, req.user.name, "payment",
+      `${amount} received (${method}) for ${r.code}`);
     res.status(201).json({ id });
+  });
+
+  // ---------------- accounts / reports ----------------
+  app.get("/api/properties/:id/reports/summary", requireAuth, (req, res) => {
+    const pid = req.params.id;
+    const from = isDate(req.query.from) ? req.query.from : "0000-01-01";
+    const to = isDate(req.query.to) ? req.query.to : "9999-12-31";
+
+    const byMethod = db.prepare(`
+      SELECT p.method, COUNT(*) AS count, SUM(p.amount) AS amount
+      FROM payments p JOIN reservations r ON r.id = p.reservation_id
+      WHERE r.property_id = ? AND date(p.paid_at) BETWEEN ? AND ?
+      GROUP BY p.method ORDER BY amount DESC`).all(pid, from, to);
+
+    const totals = db.prepare(`
+      SELECT COUNT(*) AS count, COALESCE(SUM(p.amount),0) AS amount
+      FROM payments p JOIN reservations r ON r.id = p.reservation_id
+      WHERE r.property_id = ? AND date(p.paid_at) BETWEEN ? AND ?`).get(pid, from, to);
+
+    const bookedRevenue = db.prepare(`
+      SELECT COALESCE(SUM(total),0) AS amount, COUNT(*) AS count
+      FROM reservations
+      WHERE property_id = ? AND status != 'cancelled'
+        AND check_in BETWEEN ? AND ?`).get(pid, from, to);
+
+    const outstanding = db.prepare(`
+      SELECT r.id, r.code, g.full_name AS guest_name, r.check_in, r.check_out,
+             r.status, r.total,
+             COALESCE((SELECT SUM(amount) FROM payments WHERE reservation_id = r.id), 0) AS paid
+      FROM reservations r JOIN guests g ON g.id = r.guest_id
+      WHERE r.property_id = ? AND r.status IN ('booked','checked_in','checked_out')
+        AND r.total > COALESCE((SELECT SUM(amount) FROM payments WHERE reservation_id = r.id), 0)
+      ORDER BY r.check_in DESC LIMIT 100`).all(pid);
+
+    res.json({
+      from, to,
+      collected: totals,
+      booked_revenue: bookedRevenue,
+      by_method: byMethod,
+      outstanding: outstanding.map((o) => ({ ...o, balance: o.total - o.paid })),
+      outstanding_total: outstanding.reduce((s, o) => s + (o.total - o.paid), 0),
+    });
+  });
+
+  // ---------------- activity log ----------------
+  app.get("/api/properties/:id/activity", requireAuth, (req, res) => {
+    res.json(db.prepare(`
+      SELECT * FROM activity_log WHERE property_id = ?
+      ORDER BY id DESC LIMIT 150`).all(req.params.id));
   });
 
   // ---------------- dashboard ----------------

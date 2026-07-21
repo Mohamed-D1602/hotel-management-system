@@ -113,6 +113,15 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS activity_log (
+  id INTEGER PRIMARY KEY,
+  property_id INTEGER REFERENCES properties(id),
+  actor TEXT NOT NULL,           -- user name or 'Online guest'
+  action TEXT NOT NULL,          -- e.g. booking_created, check_in, payment
+  details TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_res_property_dates
   ON reservations(property_id, check_in, check_out);
 CREATE INDEX IF NOT EXISTS idx_rooms_property ON rooms(property_id);
@@ -228,4 +237,10 @@ db.prepare(`
   UPDATE properties SET name = 'Kanon Hotel Makkah', city = 'Makkah'
   WHERE name = 'Kanon Hotel Jeddah'`).run();
 
-module.exports = { db, hashPassword, verifyPassword, reservationCode };
+function logActivity(propertyId, actor, action, details = "") {
+  db.prepare(`
+    INSERT INTO activity_log (property_id, actor, action, details)
+    VALUES (?, ?, ?, ?)`).run(propertyId, actor, action, details);
+}
+
+module.exports = { db, hashPassword, verifyPassword, reservationCode, logActivity };

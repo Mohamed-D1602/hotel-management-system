@@ -176,3 +176,11 @@ tr:last-child td { border-bottom: 0; }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* housekeeping board */
+.hk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.hk-chip { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px; font-size: 13px; background: #fff; }
+.hk-dirty { border-left: 4px solid var(--warn); }
+.hk-clean { border-left: 4px solid var(--ok); }
+.hk-inspected { border-left: 4px solid #2c4e8a; }

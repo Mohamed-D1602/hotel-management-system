@@ -249,3 +249,36 @@ function confirmationModal(out, type, hotel) {
   }, { threshold: 0.12 });
   document.querySelectorAll(".reveal").forEach((s) => io.observe(s));
 })();
+
+// ---------------------------------------------------------------- flash: hero slideshow
+(function () {
+  const slides = document.querySelectorAll(".hero-slides .slide");
+  if (slides.length > 1) {
+    let i = 0;
+    setInterval(() => {
+      slides[i].classList.remove("active");
+      i = (i + 1) % slides.length;
+      slides[i].classList.add("active");
+    }, 6000);
+  }
+})();
+
+// ---------------------------------------------------------------- flash: animated counters
+(function () {
+  const nums = document.querySelectorAll(".counter-num");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting || e.target.dataset.done) return;
+      e.target.dataset.done = "1";
+      const target = Number(e.target.dataset.count);
+      const start = performance.now();
+      const step = (t) => {
+        const k = Math.min(1, (t - start) / 1400);
+        e.target.textContent = Math.round(target * (1 - Math.pow(1 - k, 3)));
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  }, { threshold: 0.4 });
+  nums.forEach((n) => io.observe(n));
+})();

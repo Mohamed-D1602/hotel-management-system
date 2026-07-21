@@ -134,6 +134,9 @@ function navigate(page) {
     reservations: renderReservations,
     rooms: renderRooms,
     guests: renderGuests,
+    housekeeping: renderHousekeeping,
+    accounts: renderAccounts,
+    activity: renderActivity,
     "room-types": renderRoomTypes,
     properties: renderProperties,
   };
@@ -733,3 +736,121 @@ $("#property-switcher").addEventListener("change", (e) => {
 });
 
 boot();
+
+// ---------------------------------------------------------------- housekeeping
+async function renderHousekeeping() {
+  const root = $("#page-housekeeping");
+  const p = currentProperty();
+  if (!p) { root.innerHTML = ""; return; }
+  const rooms = await api(`/api/properties/${p.id}/rooms`);
+  const groups = { dirty: [], clean: [], inspected: [] };
+  rooms.forEach((r) => groups[r.housekeeping]?.push(r));
+
+  const chip = (r) => `
+    <div class="hk-chip hk-${r.housekeeping}">
+      <strong>${esc(r.number)}</strong>
+      <span>${esc(r.room_type_name)}</span>
+      <span class="badge badge-${r.status}">${esc(r.status.replace(/_/g, " "))}</span>
+      <div class="row-actions">
+        ${r.housekeeping !== "clean" ? `<button class="btn btn-small" data-hk="clean" data-id="${r.id}">Clean</button>` : ""}
+        ${r.housekeeping !== "inspected" ? `<button class="btn btn-small" data-hk="inspected" data-id="${r.id}">Inspected</button>` : ""}
+        ${r.housekeeping !== "dirty" ? `<button class="btn btn-small" data-hk="dirty" data-id="${r.id}">Dirty</button>` : ""}
+      </div>
+    </div>`;
+
+  root.innerHTML = `
+    <div class="page-head">
+      <div><h2>Housekeeping</h2>
+      <p class="page-sub">${esc(p.name)} · ${groups.dirty.length} to clean, ${groups.clean.length} clean, ${groups.inspected.length} inspected</p></div>
+    </div>
+    <div class="panel"><h3>Needs cleaning (${groups.dirty.length})</h3>
+      <div class="hk-grid">${groups.dirty.map(chip).join("") || '<p class="empty">Nothing to clean — great work.</p>'}</div></div>
+    <div class="panel"><h3>Clean (${groups.clean.length})</h3>
+      <div class="hk-grid">${groups.clean.map(chip).join("") || '<p class="empty">None</p>'}</div></div>
+    <div class="panel"><h3>Inspected (${groups.inspected.length})</h3>
+      <div class="hk-grid">${groups.inspected.map(chip).join("") || '<p class="empty">None</p>'}</div></div>`;
+
+  root.querySelectorAll("[data-hk]").forEach((b) =>
+    b.addEventListener("click", async () => {
+      await api(`/api/rooms/${b.dataset.id}`, { method: "PUT", body: { housekeeping: b.dataset.hk } });
+      renderHousekeeping();
+    }));
+}
+
+// ---------------------------------------------------------------- accounts
+async function renderAccounts() {
+  const root = $("#page-accounts");
+  const p = currentProperty();
+  if (!p) { root.innerHTML = ""; return; }
+  const today = new Date().toISOString().slice(0, 10);
+  const monthStart = today.slice(0, 8) + "01";
+  const from = root.dataset.from || monthStart;
+  const to = root.dataset.to || today;
+  const d = await api(`/api/properties/${p.id}/reports/summary?from=${from}&to=${to}`);
+
+  root.innerHTML = `
+    <div class="page-head">
+      <div><h2>Accounts</h2><p class="page-sub">${esc(p.name)} · ${esc(from)} → ${esc(to)}</p></div>
+    </div>
+    <div class="toolbar">
+      <label>From<input type="date" id="acc-from" value="${esc(from)}"></label>
+      <label>To<input type="date" id="acc-to" value="${esc(to)}"></label>
+      <button class="btn btn-primary" id="acc-run">Update</button>
+    </div>
+    <div class="cards">
+      <div class="stat-card accent"><div class="stat-label">Collected</div>
+        <div class="stat-value">${money(d.collected.amount)}</div>
+        <div class="stat-label">${d.collected.count} payment(s)</div></div>
+      <div class="stat-card"><div class="stat-label">Booked revenue (stays starting in period)</div>
+        <div class="stat-value">${money(d.booked_revenue.amount)}</div>
+        <div class="stat-label">${d.booked_revenue.count} reservation(s)</div></div>
+      <div class="stat-card"><div class="stat-label">Outstanding balances</div>
+        <div class="stat-value">${money(d.outstanding_total)}</div>
+        <div class="stat-label">${d.outstanding.length} reservation(s)</div></div>
+    </div>
+    <div class="panel"><h3>Payments by method</h3>
+      <table><thead><tr><th>Method</th><th>Payments</th><th>Amount</th></tr></thead><tbody>
+        ${d.by_method.length ? d.by_method.map((m) => `
+          <tr><td>${esc(m.method.replace(/_/g, " "))}</td><td>${m.count}</td><td>${money(m.amount)}</td></tr>`).join("")
+        : '<tr><td colspan="3" class="empty">No payments in this period.</td></tr>'}
+      </tbody></table></div>
+    <div class="panel"><h3>Outstanding balances</h3>
+      <table><thead><tr><th>Code</th><th>Guest</th><th>Dates</th><th>Status</th><th>Total</th><th>Paid</th><th>Balance</th></tr></thead><tbody>
+        ${d.outstanding.length ? d.outstanding.map((o) => `
+          <tr><td>${esc(o.code)}</td><td>${esc(o.guest_name)}</td>
+          <td>${esc(o.check_in)} → ${esc(o.check_out)}</td>
+          <td><span class="badge badge-${o.status}">${esc(o.status.replace(/_/g, " "))}</span></td>
+          <td>${money(o.total)}</td><td>${money(o.paid)}</td><td><strong>${money(o.balance)}</strong></td></tr>`).join("")
+        : '<tr><td colspan="7" class="empty">Nothing outstanding — all paid up.</td></tr>'}
+      </tbody></table></div>`;
+
+  $("#acc-run").addEventListener("click", () => {
+    root.dataset.from = $("#acc-from").value;
+    root.dataset.to = $("#acc-to").value;
+    renderAccounts();
+  });
+}
+
+// ---------------------------------------------------------------- activity
+async function renderActivity() {
+  const root = $("#page-activity");
+  const p = currentProperty();
+  if (!p) { root.innerHTML = ""; return; }
+  const log = await api(`/api/properties/${p.id}/activity`);
+  const labels = {
+    booking_created: "Booking created", online_booking: "Online booking",
+    check_in: "Check-in", check_out: "Check-out",
+    cancelled: "Cancelled", payment: "Payment",
+  };
+  root.innerHTML = `
+    <div class="page-head"><div><h2>Activity</h2>
+      <p class="page-sub">${esc(p.name)} · everything that happened, newest first</p></div></div>
+    <div class="panel">
+      <table><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr></thead><tbody>
+        ${log.length ? log.map((a) => `
+          <tr><td>${esc(a.created_at)}</td><td>${esc(a.actor)}</td>
+          <td><span class="badge badge-${a.action === "cancelled" ? "cancelled" : a.action === "payment" ? "checked_in" : "booked"}">${esc(labels[a.action] || a.action)}</span></td>
+          <td>${esc(a.details || "")}</td></tr>`).join("")
+        : '<tr><td colspan="4" class="empty">No activity yet.</td></tr>'}
+      </tbody></table></div>`;
+}
