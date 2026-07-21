@@ -188,6 +188,70 @@ function registerReservationRoutes(app) {
     res.status(201).json({ id });
   });
 
+  // ---------------- edit reservation ----------------
+  app.put("/api/reservations/:id", requireAuth, (req, res) => {
+    const r = getReservation(req.params.id);
+    if (!r) return res.status(404).json({ error: "Reservation not found" });
+    if (["cancelled", "checked_out", "no_show"].includes(r.status)) {
+      return res.status(400).json({ error: `Cannot edit a ${r.status.replace("_", "-")} reservation` });
+    }
+    const { check_in = r.check_in, check_out = r.check_out,
+            nightly_rate = r.nightly_rate, notes = r.notes,
+            room_id = r.room_id, adults = r.adults, children = r.children } = req.body || {};
+    if (!isDate(check_in) || !isDate(check_out) || check_out <= check_in) {
+      return res.status(400).json({ error: "Check-out must be after check-in" });
+    }
+    if (room_id) {
+      const clash = db.prepare(`
+        SELECT COUNT(*) AS n FROM reservations
+        WHERE room_id = ? AND id != ? AND ${OVERLAP_SQL}`)
+        .get(room_id, r.id, check_out, check_in).n;
+      if (clash > 0) return res.status(409).json({ error: "That room is booked for the new dates" });
+    }
+    const nights = nightsBetween(check_in, check_out);
+    db.prepare(`
+      UPDATE reservations SET check_in=?, check_out=?, nightly_rate=?, total=?,
+        notes=?, room_id=?, adults=?, children=? WHERE id=?`)
+      .run(check_in, check_out, nightly_rate, nightly_rate * nights,
+           notes, room_id, adults, children, r.id);
+    logActivity(r.property_id, req.user.name, "booking_updated",
+      `${r.code} · ${check_in} → ${check_out} @ ${nightly_rate}/night`);
+    res.json({ ok: true, nights, total: nightly_rate * nights });
+  });
+
+  // ---------------- no-show ----------------
+  app.post("/api/reservations/:id/no-show", requireAuth, (req, res) => {
+    const r = getReservation(req.params.id);
+    if (!r) return res.status(404).json({ error: "Reservation not found" });
+    if (r.status !== "booked") {
+      return res.status(400).json({ error: "Only booked reservations can be marked no-show" });
+    }
+    db.prepare("UPDATE reservations SET status='no_show' WHERE id=?").run(r.id);
+    logActivity(r.property_id, req.user.name, "no_show", `Reservation ${r.code}`);
+    res.json({ ok: true });
+  });
+
+  // ---------------- folio (for invoice printing) ----------------
+  app.get("/api/reservations/:id/folio", requireAuth, (req, res) => {
+    const folio = db.prepare(`
+      SELECT res.*, g.full_name AS guest_name, g.phone AS guest_phone, g.email AS guest_email,
+             t.name AS room_type_name, rm.number AS room_number,
+             p.name AS property_name, p.address AS property_address,
+             p.phone AS property_phone, p.currency
+      FROM reservations res
+      JOIN guests g ON g.id = res.guest_id
+      JOIN room_types t ON t.id = res.room_type_id
+      JOIN properties p ON p.id = res.property_id
+      LEFT JOIN rooms rm ON rm.id = res.room_id
+      WHERE res.id = ?`).get(req.params.id);
+    if (!folio) return res.status(404).json({ error: "Reservation not found" });
+    const payments = db.prepare(
+      "SELECT * FROM payments WHERE reservation_id = ? ORDER BY paid_at").all(folio.id);
+    const paid = payments.reduce((s, p) => s + p.amount, 0);
+    res.json({ ...folio, nights: nightsBetween(folio.check_in, folio.check_out),
+               payments, paid, balance: folio.total - paid });
+  });
+
   // ---------------- accounts / reports ----------------
   app.get("/api/properties/:id/reports/summary", requireAuth, (req, res) => {
     const pid = req.params.id;

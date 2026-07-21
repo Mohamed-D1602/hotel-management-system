@@ -107,13 +107,16 @@ function renderCards(types) {
       please check back, or contact the hotel directly.</p>`;
     return;
   }
-  root.innerHTML = types.map((t) => {
+  const tempImgs = ["/img/room-suite.jpg", "/img/room-double.jpg", "/img/bathroom.jpg",
+    "/img/conference-1.jpg", "/img/cafe-lounge.jpg", "/img/conference-2.jpg"];
+  root.innerHTML = types.map((t, ti) => {
     const fits = t.capacity >= guests;
     const searched = t.available !== null && t.available !== undefined;
     const canBook = (!searched || t.available > 0);
     return `
     <article class="room-card">
-      <div class="room-visual"><span class="room-glyph">${esc(t.name.charAt(0))}</span></div>
+      <div class="room-visual" style="background-image:linear-gradient(rgba(11,31,26,.25), rgba(11,31,26,.55)), url('${tempImgs[ti % tempImgs.length]}'); background-size:cover; background-position:center">
+        <span class="room-glyph">${esc(t.name.charAt(0))}</span></div>
       <div class="room-body">
         <h3>${esc(t.name)}</h3>
         <p class="room-desc">${esc(t.description || "")}</p>

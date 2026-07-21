@@ -139,6 +139,7 @@ function navigate(page) {
     activity: renderActivity,
     "room-types": renderRoomTypes,
     properties: renderProperties,
+    settings: renderSettings,
   };
   renderers[page]?.().catch((e) => toast(e.message, true));
 }
@@ -226,7 +227,10 @@ async function renderReservations() {
                 ${r.status === "booked" ? `<button class="btn btn-small btn-primary" data-act="check-in" data-id="${r.id}">Check in</button>
                   <button class="btn btn-small btn-danger" data-act="cancel" data-id="${r.id}">Cancel</button>` : ""}
                 ${r.status === "checked_in" ? `<button class="btn btn-small btn-primary" data-act="check-out" data-id="${r.id}">Check out</button>` : ""}
+                ${["booked", "checked_in"].includes(r.status) ? `<button class="btn btn-small" data-act="edit" data-id="${r.id}">Edit</button>` : ""}
+                ${r.status === "booked" ? `<button class="btn btn-small" data-act="no-show" data-id="${r.id}">No-show</button>` : ""}
                 <button class="btn btn-small" data-act="payments" data-id="${r.id}">Payments</button>
+                <button class="btn btn-small" data-act="invoice" data-id="${r.id}">Invoice</button>
               </td>
             </tr>`).join("")
           : `<tr><td colspan="7" class="empty">No reservations yet — create the first one.</td></tr>`}
@@ -259,6 +263,13 @@ async function reservationAction(act, id, list) {
     } else if (act === "cancel") {
       await api(`/api/reservations/${id}/cancel`, { method: "POST" });
       toast("Reservation cancelled");
+    } else if (act === "no-show") {
+      await api(`/api/reservations/${id}/no-show`, { method: "POST" });
+      toast("Marked as no-show");
+    } else if (act === "edit") {
+      return editReservationModal(r);
+    } else if (act === "invoice") {
+      return printInvoice(id);
     } else if (act === "payments") {
       return paymentsModal(r);
     }
@@ -853,4 +864,133 @@ async function renderActivity() {
           <td>${esc(a.details || "")}</td></tr>`).join("")
         : '<tr><td colspan="4" class="empty">No activity yet.</td></tr>'}
       </tbody></table></div>`;
+}
+
+// ---------------------------------------------------------------- edit reservation
+function editReservationModal(r) {
+  openModal(`Edit — ${r.code}`, `
+    <div class="grid-2">
+      <label>Check-in<input type="date" name="check_in" value="${esc(r.check_in)}" required></label>
+      <label>Check-out<input type="date" name="check_out" value="${esc(r.check_out)}" required></label>
+    </div>
+    <div class="grid-2">
+      <label>Nightly rate<input type="number" name="nightly_rate" min="0" step="0.01" value="${r.nightly_rate}"></label>
+      <label>Adults<input type="number" name="adults" min="1" value="${r.adults}"></label>
+    </div>
+    <label>Notes<textarea name="notes" rows="2">${esc(r.notes || "")}</textarea></label>`,
+    async (fd, close) => {
+      const out = await api(`/api/reservations/${r.id}`, {
+        method: "PUT",
+        body: {
+          check_in: fd.get("check_in"), check_out: fd.get("check_out"),
+          nightly_rate: Number(fd.get("nightly_rate")),
+          adults: Number(fd.get("adults")), notes: fd.get("notes"),
+        },
+      });
+      close(); toast(`Updated — new total ${money(out.total)}`); renderReservations();
+    });
+}
+
+// ---------------------------------------------------------------- invoice printing
+async function printInvoice(id) {
+  const f = await api(`/api/reservations/${id}/folio`);
+  const rows = f.payments.map((p) => `
+    <tr><td>${esc(p.paid_at.slice(0, 10))}</td><td>${esc(p.method.replace("_", " "))}</td>
+    <td style="text-align:right">${Number(p.amount).toLocaleString()} ${esc(f.currency)}</td></tr>`).join("");
+  const w = window.open("", "_blank");
+  w.document.write(`<!DOCTYPE html><html><head><title>Invoice ${esc(f.code)}</title>
+  <style>
+    body { font-family: Georgia, serif; color: #1c2321; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+    .head { display: flex; justify-content: space-between; border-bottom: 3px solid #b98a2f; padding-bottom: 16px; }
+    h1 { font-size: 22px; margin: 0; } h2 { font-size: 15px; margin: 24px 0 8px; }
+    .muted { color: #666; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    td, th { padding: 8px 6px; border-bottom: 1px solid #ddd; text-align: left; }
+    .totals td { font-size: 15px; } .grand { font-weight: bold; font-size: 17px; }
+    @media print { .noprint { display: none; } }
+  </style></head><body>
+  <div class="head">
+    <div><h1>${esc(f.property_name)}</h1>
+      <div class="muted">${esc(f.property_address || "")}<br>${esc(f.property_phone || "")}</div></div>
+    <div style="text-align:right"><h1>INVOICE</h1>
+      <div class="muted">${esc(f.code)}<br>${new Date().toISOString().slice(0, 10)}</div></div>
+  </div>
+  <h2>Guest</h2>
+  <div>${esc(f.guest_name)}${f.guest_phone ? " · " + esc(f.guest_phone) : ""}${f.guest_email ? " · " + esc(f.guest_email) : ""}</div>
+  <h2>Stay</h2>
+  <table>
+    <tr><th>Room type</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th style="text-align:right">Rate/night</th></tr>
+    <tr><td>${esc(f.room_type_name)}</td><td>${esc(f.room_number || "—")}</td>
+      <td>${esc(f.check_in)}</td><td>${esc(f.check_out)}</td><td>${f.nights}</td>
+      <td style="text-align:right">${Number(f.nightly_rate).toLocaleString()} ${esc(f.currency)}</td></tr>
+  </table>
+  <h2>Payments</h2>
+  <table>${rows || '<tr><td class="muted">No payments recorded</td></tr>'}</table>
+  <table class="totals" style="margin-top:18px">
+    <tr><td>Total for stay</td><td style="text-align:right">${Number(f.total).toLocaleString()} ${esc(f.currency)}</td></tr>
+    <tr><td>Paid</td><td style="text-align:right">${Number(f.paid).toLocaleString()} ${esc(f.currency)}</td></tr>
+    <tr class="grand"><td>Balance due</td><td style="text-align:right">${Number(f.balance).toLocaleString()} ${esc(f.currency)}</td></tr>
+  </table>
+  <p class="muted" style="margin-top:30px">Thank you for staying with us.</p>
+  <button class="noprint" onclick="window.print()" style="margin-top:16px;padding:10px 22px">Print</button>
+  </body></html>`);
+  w.document.close();
+}
+
+// ---------------------------------------------------------------- settings
+async function renderSettings() {
+  const root = $("#page-settings");
+  const isAdmin = state.user.role === "admin";
+  let usersHTML = "";
+  if (isAdmin) {
+    const users = await api("/api/users");
+    usersHTML = `
+      <div class="panel">
+        <h3>Staff accounts</h3>
+        <table><thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead><tbody>
+          ${users.map((u) => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td>
+            <td><span class="badge badge-booked">${esc(u.role)}</span></td></tr>`).join("")}
+        </tbody></table>
+        <div style="margin-top:12px"><button class="btn btn-primary" id="user-new">Add staff account</button></div>
+      </div>`;
+  }
+  root.innerHTML = `
+    <div class="page-head"><div><h2>Settings</h2>
+      <p class="page-sub">Signed in as ${esc(state.user.name)} (${esc(state.user.role)})</p></div></div>
+    <div class="panel">
+      <h3>Change my password</h3>
+      <form id="pw-form" style="max-width:380px">
+        <label>Current password<input type="password" name="current" required autocomplete="current-password"></label>
+        <label>New password (min 8 characters)<input type="password" name="next" minlength="8" required autocomplete="new-password"></label>
+        <button class="btn btn-primary" type="submit">Update password</button>
+      </form>
+    </div>
+    ${usersHTML}`;
+
+  $("#pw-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    try {
+      await api("/api/auth/change-password", { method: "POST",
+        body: { current: fd.get("current"), next: fd.get("next") } });
+      toast("Password updated"); e.target.reset();
+    } catch (err) { toast(err.message, true); }
+  });
+
+  if (isAdmin) $("#user-new")?.addEventListener("click", () =>
+    openModal("Add staff account", `
+      <label>Name<input name="name" required></label>
+      <label>Email<input type="email" name="email" required></label>
+      <label>Password (min 8 characters)<input type="password" name="password" minlength="8" required></label>
+      <label>Role
+        <select name="role">
+          <option value="staff">Staff</option>
+          <option value="manager">Manager</option>
+          <option value="admin">Admin</option>
+        </select>
+      </label>`,
+      async (fd, close) => {
+        await api("/api/users", { method: "POST", body: Object.fromEntries(fd) });
+        close(); toast("Staff account created"); renderSettings();
+      }, "Create account"));
 }

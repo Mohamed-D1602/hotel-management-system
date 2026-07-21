@@ -86,6 +86,23 @@ function assert(cond, label) {
   r = await api(`/api/properties/${khartoum.id}/dashboard?date=2030-01-10`);
   assert(r.status === 200 && typeof r.data.occupancy_pct === "number", "dashboard");
 
+  // edit a reservation: new booking, change dates and rate
+  r = await api(`/api/properties/${khartoum.id}/reservations`, { method: "POST",
+    body: { guest_id: guestId, room_type_id: room.room_type_id,
+            check_in: "2030-03-01", check_out: "2030-03-03", nightly_rate: 100 } });
+  const editId = r.data.id;
+  r = await api(`/api/reservations/${editId}`, { method: "PUT",
+    body: { check_in: "2030-03-01", check_out: "2030-03-04", nightly_rate: 120 } });
+  assert(r.status === 200 && r.data.total === 360, "edit reservation (3 nights x 120)");
+
+  // no-show
+  r = await api(`/api/reservations/${editId}/no-show`, { method: "POST" });
+  assert(r.status === 200, "mark no-show");
+
+  // folio
+  r = await api(`/api/reservations/${resId}/folio`);
+  assert(r.status === 200 && r.data.guest_name && r.data.balance === 50, "folio with balance");
+
   // ---------- public booking site API (no auth) ----------
   const pub = (path, options = {}) =>
     fetch(BASE + path, {
