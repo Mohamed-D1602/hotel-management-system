@@ -167,11 +167,6 @@ function seed() {
       "+249 183 59 59 59 / +249 183 59 55 55", "USD", "Africa/Khartoum"
     ).lastInsertRowid;
 
-    const suitesId = insertProperty.run(
-      brandId, "Kanon Hotel Suites", "Khartoum", "Sudan",
-      "37th Street, Khartoum 2", "+249 183 58 88 88", "USD", "Africa/Khartoum"
-    ).lastInsertRowid;
-
     const makkahId = insertProperty.run(
       brandId, "Kanon Hotel Makkah", "Makkah", "Saudi Arabia",
       "", "", "SAR", "Asia/Riyadh"
@@ -195,7 +190,8 @@ function seed() {
       typeByName[t[0]] = insertType.run(khartoumId, ...t).lastInsertRowid;
     });
 
-    insertType.run(suitesId, "Suite", "En-suite hotel suite", 2, 0);
+    insertType.run(khartoumId, "Kanon Suites (37th Street wing)",
+      "Spacious suites at our 37th Street, Khartoum 2 address · +249 183 58 88 88", 3, 0);
     insertType.run(makkahId, "Standard Room", "En-suite room", 2, 0);
     insertType.run(makkahId, "Suite", "Suite with lounge", 3, 0);
 
@@ -238,6 +234,22 @@ seed();
 db.prepare(`
   UPDATE properties SET name = 'Kanon Hotel Makkah', city = 'Makkah'
   WHERE name = 'Kanon Hotel Jeddah'`).run();
+
+// One-time migration: Kanon Hotel Suites is a wing of Khartoum, not a separate branch.
+const suitesRow = db.prepare(
+  "SELECT id FROM properties WHERE name = 'Kanon Hotel Suites' AND active = 1").get();
+if (suitesRow) {
+  const kh = db.prepare(
+    "SELECT id FROM properties WHERE name = 'Kanon Hotel Khartoum'").get();
+  if (kh) {
+    db.prepare(`
+      INSERT OR IGNORE INTO room_types (property_id, name, description, capacity, base_rate)
+      VALUES (?, 'Kanon Suites (37th Street wing)',
+              'Spacious suites at our 37th Street, Khartoum 2 address · +249 183 58 88 88', 3, 0)`)
+      .run(kh.id);
+  }
+  db.prepare("UPDATE properties SET active = 0 WHERE id = ?").run(suitesRow.id);
+}
 
 function logActivity(propertyId, actor, action, details = "") {
   db.prepare(`

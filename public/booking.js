@@ -1,12 +1,17 @@
-/* Kanon Hotels — guest booking site logic. */
+/* Kanon Hotel — guest booking site (Signature Blue). */
 "use strict";
 
-const $ = (sel, root = document) => root.querySelector(sel);
+const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 let properties = [];
 let currentSearch = null;
+
+const ROOM_IMAGES = [
+  "/img/room-suite.jpg", "/img/room-double.jpg", "/img/cafe-lounge.jpg",
+  "/img/conference-1.jpg", "/img/bathroom.jpg", "/img/conference-2.jpg",
+];
 
 function currency() {
   const id = Number($("#search-hotel").value);
@@ -28,33 +33,28 @@ async function api(path, options = {}) {
 }
 
 let toastTimer;
-function toast(message, isError = false) {
+function toast(msg, isError = false) {
   const t = $("#toast");
-  t.textContent = message;
+  t.textContent = msg;
   t.classList.toggle("error", isError);
   t.classList.remove("hidden");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.add("hidden"), 4000);
 }
 
-// ---------------------------------------------------------------- init
+/* ---------------- init ---------------- */
 (async function init() {
   const today = new Date().toISOString().slice(0, 10);
   const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-  $("#search-in").value = today;
-  $("#search-in").min = today;
-  $("#search-out").value = tomorrow;
-  $("#search-out").min = tomorrow;
+  $("#search-in").value = today; $("#search-in").min = today;
+  $("#search-out").value = tomorrow; $("#search-out").min = tomorrow;
 
   try {
     properties = await api("/api/public/properties");
     $("#search-hotel").innerHTML = properties
-      .map((p) => `<option value="${p.id}">${esc(p.name)} — ${esc(p.city)}</option>`)
-      .join("");
-  } catch (e) {
-    toast(e.message, true);
-  }
-  renderRoomTypesPreview();
+      .map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join("");
+  } catch (e) { toast(e.message, true); }
+  preview();
 })();
 
 $("#search-in").addEventListener("change", () => {
@@ -64,79 +64,62 @@ $("#search-in").addEventListener("change", () => {
   $("#search-out").min = next;
   if ($("#search-out").value <= inDate) $("#search-out").value = next;
 });
+$("#search-hotel").addEventListener("change", () => { currentSearch = null; preview(); });
 
-$("#search-hotel").addEventListener("change", () => {
-  currentSearch = null;
-  renderRoomTypesPreview();
-});
-
-// ---------------------------------------------------------------- preview (no dates yet)
-async function renderRoomTypesPreview() {
+/* ---------------- preview (before dates chosen) ---------------- */
+async function preview() {
   const id = Number($("#search-hotel").value);
   if (!id) return;
   try {
     const types = await api(`/api/public/properties/${id}/room-types`);
     $("#results-sub").textContent = "Choose your dates above to see live availability and rates.";
-    renderCards(types.map((t) => ({ ...t, available: null })));
+    render(types.map((t) => ({ ...t, available: null })));
   } catch (e) { toast(e.message, true); }
 }
 
-// ---------------------------------------------------------------- search
+/* ---------------- search ---------------- */
 $("#search-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = Number($("#search-hotel").value);
-  const check_in = $("#search-in").value;
-  const check_out = $("#search-out").value;
+  const check_in = $("#search-in").value, check_out = $("#search-out").value;
   try {
-    const data = await api(
-      `/api/public/properties/${id}/availability?check_in=${check_in}&check_out=${check_out}`);
-    currentSearch = { property_id: id, check_in, check_out, nights: data.nights };
+    const d = await api(`/api/public/properties/${id}/availability?check_in=${check_in}&check_out=${check_out}`);
+    currentSearch = { property_id: id, check_in, check_out, nights: d.nights };
     const hotel = properties.find((p) => p.id === id);
     $("#results-sub").textContent =
-      `${hotel.name} · ${check_in} → ${check_out} · ${data.nights} night${data.nights > 1 ? "s" : ""}`;
-    renderCards(data.room_types);
-    document.getElementById("stay").scrollIntoView({ behavior: "smooth" });
+      `${hotel.name} · ${check_in} → ${check_out} · ${d.nights} night${d.nights > 1 ? "s" : ""}`;
+    render(d.room_types);
+    document.getElementById("rooms").scrollIntoView({ behavior: "smooth" });
   } catch (err) { toast(err.message, true); }
 });
 
-function renderCards(types) {
+function render(types) {
   const guests = Number($("#search-guests").value || 2);
   const root = $("#results");
   if (!types.length) {
     root.innerHTML = `<p class="results-note">Room details for this hotel are coming soon —
-      please check back, or contact the hotel directly.</p>`;
+      please contact us directly.</p>`;
     return;
   }
-  const tempImgs = ["/img/room-suite.jpg", "/img/room-double.jpg", "/img/bathroom.jpg",
-    "/img/conference-1.jpg", "/img/cafe-lounge.jpg", "/img/conference-2.jpg"];
-  root.innerHTML = types.map((t, ti) => {
-    const fits = t.capacity >= guests;
+  root.innerHTML = types.map((t, i) => {
     const searched = t.available !== null && t.available !== undefined;
-    const canBook = (!searched || t.available > 0);
+    const canBook = !searched || t.available > 0;
     return `
-    <article class="room-card">
-      <div class="room-visual" style="background-image:linear-gradient(rgba(11,31,26,.25), rgba(11,31,26,.55)), url('${tempImgs[ti % tempImgs.length]}'); background-size:cover; background-position:center">
-        <span class="room-glyph">${esc(t.name.charAt(0))}</span></div>
-      <div class="room-body">
+    <article class="room">
+      <div class="room-im" style="background-image:url('${ROOM_IMAGES[i % ROOM_IMAGES.length]}')"></div>
+      <div class="room-bd">
         <h3>${esc(t.name)}</h3>
+        <div class="room-price">${t.base_rate > 0
+          ? `${money(t.base_rate)} <span>/ night</span>` : `Rate on request`}</div>
         <p class="room-desc">${esc(t.description || "")}</p>
-        <div class="room-meta">Sleeps ${t.capacity}${fits ? "" : " · smaller than your party"}</div>
-        <div class="room-price">
-          ${t.base_rate > 0
-            ? `<strong>${money(t.base_rate)}</strong> <small>/ night</small>
-               ${searched ? `<small> · ${money(t.total)} total</small>` : ""}`
-            : `<strong>Rate on request</strong>`}
-        </div>
-        ${searched
-          ? (t.available > 0
-              ? `<div class="room-availability">${t.available} room${t.available > 1 ? "s" : ""} available</div>`
-              : `<div class="room-availability none">Fully booked for these dates</div>`)
-          : ""}
+        <div class="room-meta">Sleeps ${t.capacity}${t.capacity < guests ? " · smaller than your party" : ""}${
+          searched && t.base_rate > 0 ? ` · ${money(t.total)} total` : ""}</div>
+        ${searched ? (t.available > 0
+          ? `<div class="room-avail">${t.available} room${t.available > 1 ? "s" : ""} available</div>`
+          : `<div class="room-avail none">Fully booked for these dates</div>`) : ""}
+        <button class="btn-dark" data-book="${t.id}" ${canBook ? "" : "disabled"}>
+          ${searched ? "Book this room" : "Check dates to book"}</button>
       </div>
-      <button class="btn-gold" data-book="${t.id}" ${canBook ? "" : "disabled"}
-        ${canBook ? "" : 'style="opacity:.45;cursor:not-allowed"'}>
-        ${searched ? "Book this room" : "Check dates to book"}
-      </button>
     </article>`;
   }).join("");
 
@@ -144,24 +127,23 @@ function renderCards(types) {
     b.addEventListener("click", () => {
       const t = types.find((x) => x.id === Number(b.dataset.book));
       if (!currentSearch) {
-        toast("Choose your dates first, then press Check availability");
-        document.querySelector(".booking-bar").scrollIntoView({ behavior: "smooth" });
+        toast("Choose your dates first, then press Search");
+        document.querySelector(".book").scrollIntoView({ behavior: "smooth" });
         return;
       }
       bookingModal(t);
     }));
 }
 
-// ---------------------------------------------------------------- booking
+/* ---------------- booking ---------------- */
 function bookingModal(type) {
   const hotel = properties.find((p) => p.id === currentSearch.property_id);
+  const guests = Number($("#search-guests").value || 2);
   const root = $("#modal-root");
   root.innerHTML = "";
-  const guests = Number($("#search-guests").value || 2);
-
-  const backdrop = document.createElement("div");
-  backdrop.className = "modal-backdrop";
-  backdrop.innerHTML = `
+  const back = document.createElement("div");
+  back.className = "modal-back";
+  back.innerHTML = `
     <form class="modal">
       <h3>Reserve your stay</h3>
       <p class="modal-sub">${esc(type.name)} · ${esc(hotel.name)}<br />
@@ -177,85 +159,66 @@ function bookingModal(type) {
         <label>Adults<input type="number" name="adults" min="1" value="${Math.min(guests, type.capacity)}" /></label>
         <label>Children<input type="number" name="children" min="0" value="0" /></label>
       </div>
-      <label>Special requests<textarea name="notes" rows="2" placeholder="Optional"></textarea></label>
+      <label>Special requests<textarea name="notes" rows="2"></textarea></label>
       <div class="modal-actions">
         <button type="button" class="btn-quiet" data-close>Back</button>
         <button type="submit" class="btn-gold">Confirm booking</button>
       </div>
     </form>`;
-  root.appendChild(backdrop);
-
+  root.appendChild(back);
   const close = () => (root.innerHTML = "");
-  backdrop.addEventListener("click", (e) => { if (e.target === backdrop) close(); });
-  $("[data-close]", backdrop).addEventListener("click", close);
+  back.addEventListener("click", (e) => { if (e.target === back) close(); });
+  $("[data-close]", back).addEventListener("click", close);
 
-  $("form", backdrop).addEventListener("submit", async (e) => {
+  $("form", back).addEventListener("submit", async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
     try {
       const out = await api("/api/public/bookings", {
         method: "POST",
         body: {
-          property_id: currentSearch.property_id,
-          room_type_id: type.id,
-          check_in: currentSearch.check_in,
-          check_out: currentSearch.check_out,
-          full_name: fd.get("full_name"),
-          phone: fd.get("phone"),
-          email: fd.get("email"),
-          adults: Number(fd.get("adults")),
-          children: Number(fd.get("children")),
+          property_id: currentSearch.property_id, room_type_id: type.id,
+          check_in: currentSearch.check_in, check_out: currentSearch.check_out,
+          full_name: fd.get("full_name"), phone: fd.get("phone"), email: fd.get("email"),
+          adults: Number(fd.get("adults")), children: Number(fd.get("children")),
           notes: fd.get("notes"),
         },
       });
-      confirmationModal(out, type, hotel);
+      confirmation(out, type, hotel);
     } catch (err) { toast(err.message, true); }
   });
 }
 
-function confirmationModal(out, type, hotel) {
+function confirmation(out, type, hotel) {
   const root = $("#modal-root");
   root.innerHTML = `
-    <div class="modal-backdrop">
+    <div class="modal-back">
       <div class="modal">
         <h3>Booking confirmed</h3>
         <p class="modal-sub">We look forward to welcoming you.</p>
         <div class="confirm-box">
-          <div>Your reservation code</div>
+          <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#697585">Your reservation code</div>
           <div class="confirm-code">${esc(out.code)}</div>
           <div>${esc(type.name)} · ${esc(hotel.name)}<br />
             ${esc(currentSearch.check_in)} → ${esc(currentSearch.check_out)}
             (${out.nights} night${out.nights > 1 ? "s" : ""})<br />
-            ${out.total > 0 ? `Total ${money(out.total)} — payable at the hotel` : "Rate will be confirmed by the hotel"}</div>
+            ${out.total > 0 ? `Total ${money(out.total)} — payable at the hotel`
+                            : "Rate will be confirmed by the hotel"}</div>
         </div>
-        <p style="font-size:14px;color:var(--ink-soft)">Please keep this code —
-          quote it at reception on arrival. The hotel may contact you to confirm details.</p>
-        <div class="modal-actions">
-          <button type="button" class="btn-gold" data-close>Done</button>
-        </div>
+        <p style="font-size:13.5px;color:#697585">Please keep this code and quote it at reception
+          on arrival. The hotel may contact you to confirm details.</p>
+        <div class="modal-actions"><button class="btn-gold" data-close>Done</button></div>
       </div>
     </div>`;
   $("[data-close]", root).addEventListener("click", () => {
     root.innerHTML = "";
-    $("#search-form").requestSubmit(); // refresh availability
+    $("#search-form").requestSubmit();
   });
 }
 
-// ---------------------------------------------------------------- flash: scroll effects
+/* ---------------- hero slideshow + sticky nav ---------------- */
 (function () {
-  const top = document.querySelector(".top");
-  window.addEventListener("scroll", () =>
-    top.classList.toggle("scrolled", window.scrollY > 40), { passive: true });
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("visible"); });
-  }, { threshold: 0.12 });
-  document.querySelectorAll(".reveal").forEach((s) => io.observe(s));
-})();
-
-// ---------------------------------------------------------------- flash: hero slideshow
-(function () {
-  const slides = document.querySelectorAll(".hero-bg .hero-slide");
+  const slides = document.querySelectorAll(".hero-slide");
   if (slides.length > 1) {
     let i = 0;
     setInterval(() => {
@@ -264,88 +227,7 @@ function confirmationModal(out, type, hotel) {
       slides[i].classList.add("active");
     }, 6000);
   }
-})();
-
-// ---------------------------------------------------------------- flash: animated counters
-(function () {
-  const nums = document.querySelectorAll(".counter-num");
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting || e.target.dataset.done) return;
-      e.target.dataset.done = "1";
-      const target = Number(e.target.dataset.count);
-      const start = performance.now();
-      const step = (t) => {
-        const k = Math.min(1, (t - start) / 1400);
-        e.target.textContent = Math.round(target * (1 - Math.pow(1 - k, 3)));
-        if (k < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    });
-  }, { threshold: 0.4 });
-  nums.forEach((n) => io.observe(n));
-})();
-
-// ---------------------------------------------------------------- flash L3
-(function () {
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // splash intro
-  const splash = document.getElementById("splash");
-  if (splash) setTimeout(() => splash.classList.add("done"), reduced ? 0 : 1500);
-
-  // scroll progress bar
-  const bar = document.getElementById("scroll-progress");
-  window.addEventListener("scroll", () => {
-    const h = document.documentElement;
-    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
-  }, { passive: true });
-
-  // gold dust particles
-  const canvas = document.getElementById("gold-dust");
-  if (canvas && !reduced) {
-    const ctx = canvas.getContext("2d");
-    let W, H, dots;
-    const resize = () => {
-      W = canvas.width = canvas.offsetWidth;
-      H = canvas.height = canvas.offsetHeight;
-      dots = Array.from({ length: 42 }, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        r: 0.6 + Math.random() * 1.8,
-        vy: 0.12 + Math.random() * 0.3, vx: (Math.random() - 0.5) * 0.15,
-        tw: Math.random() * Math.PI * 2,
-      }));
-    };
-    resize();
-    window.addEventListener("resize", resize);
-    (function draw(t) {
-      ctx.clearRect(0, 0, W, H);
-      for (const d of dots) {
-        d.y -= d.vy; d.x += d.vx; d.tw += 0.03;
-        if (d.y < -4) { d.y = H + 4; d.x = Math.random() * W; }
-        const a = 0.25 + 0.45 * (0.5 + Math.sin(d.tw) / 2);
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(222,184,106,${a})`;
-        ctx.shadowColor = "rgba(201,162,75,.8)"; ctx.shadowBlur = 6;
-        ctx.fill();
-      }
-      requestAnimationFrame(draw);
-    })();
-  }
-
-  // 3D tilt on cards
-  if (!reduced && matchMedia("(hover: hover)").matches) {
-    document.addEventListener("mousemove", (e) => {
-      const card = e.target.closest(".room-card, .gallery-grid figure");
-      document.querySelectorAll(".room-card, .gallery-grid figure").forEach((c) => {
-        if (c !== card) c.style.transform = "";
-      });
-      if (!card) return;
-      const r = card.getBoundingClientRect();
-      const rx = ((e.clientY - r.top) / r.height - 0.5) * -7;
-      const ry = ((e.clientX - r.left) / r.width - 0.5) * 7;
-      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-    });
-  }
+  const nav = $("#nav");
+  window.addEventListener("scroll", () =>
+    nav.classList.toggle("stuck", window.scrollY > 60), { passive: true });
 })();

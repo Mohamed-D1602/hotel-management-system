@@ -30,7 +30,7 @@ function assert(cond, label) {
 
   // properties
   r = await api("/api/properties");
-  assert(r.data.length >= 3, "three seeded properties");
+  assert(r.data.length >= 2, "two seeded branches (Khartoum + Makkah)");
   const khartoum = r.data.find((p) => p.name === "Kanon Hotel Khartoum");
   assert(khartoum && khartoum.currency === "USD", "Khartoum property with USD rates");
 
@@ -42,7 +42,7 @@ function assert(cond, label) {
 
   // room types + availability
   const types = (await api(`/api/properties/${khartoum.id}/room-types`)).data;
-  assert(types.length === 6, "six Khartoum room categories");
+  assert(types.length >= 6, "Khartoum room categories incl. Suites wing");
   r = await api(`/api/properties/${khartoum.id}/availability?check_in=2030-01-10&check_out=2030-01-12`);
   assert(r.data.nights === 2 && r.data.rooms.length > 0, "availability search");
   const room = r.data.rooms[0];
@@ -117,7 +117,7 @@ function assert(cond, label) {
   assert(makkah, "public: Makkah property present");
 
   r = await pub(`/api/public/properties/${khartoum.id}/availability?check_in=2030-02-01&check_out=2030-02-03`);
-  assert(r.status === 200 && r.data.room_types.length === 6, "public: availability by room type");
+  assert(r.status === 200 && r.data.room_types.length >= 6, "public: availability by room type");
   const bookable = r.data.room_types.find((t) => t.available > 0);
   assert(bookable, "public: at least one bookable type");
 

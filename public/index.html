@@ -3,176 +3,142 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kanon Hotels — Khartoum · Makkah | Book your stay</title>
-<meta name="description" content="Kanon Hotels — refined hospitality in Khartoum and Makkah. Check availability and book your room online." />
+<title>Kanon Hotel — Khartoum &amp; Makkah | Book direct</title>
+<meta name="description" content="Kanon Hotel — 124 en-suite rooms in Al-Amarat, Khartoum, and our new address in Makkah. Check availability and book direct." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&family=Manrope:wght@300;400;500;600;700&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@300;400;500;600;700&family=Reem+Kufi:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/booking.css" />
 </head>
 <body>
-<div id="splash" aria-hidden="true">
-  <div class="splash-inner">
-    <svg viewBox="0 0 120 120" fill="none"><g fill="currentColor"><path d="M46 88 C44 56 50 30 68 12 C62 34 60 60 62 88 Z"/><path d="M66 88 C68 62 76 44 94 32 C84 50 80 68 80 88 Z" opacity=".82"/><path d="M40 88 C40 62 44 40 54 24 L57 26 C48 42 45 63 45 88 Z" opacity=".55"/><rect x="22" y="92" width="76" height="4" rx="2"/><rect x="34" y="102" width="52" height="3" rx="1.5" opacity=".6"/></g></svg>
-    <div class="splash-name">KANON HOTEL</div>
-    <div class="splash-ar">فندق كنون</div>
-  </div>
-</div>
-<div id="scroll-progress" aria-hidden="true"></div>
 
-<header class="top">
-  <a class="wordmark" href="#top" aria-label="Kanon Hotel">
-    <span class="logo-mark"><svg viewBox="0 0 120 120" fill="none"><g fill="currentColor"><path d="M46 88 C44 56 50 30 68 12 C62 34 60 60 62 88 Z"/><path d="M66 88 C68 62 76 44 94 32 C84 50 80 68 80 88 Z" opacity=".82"/><path d="M40 88 C40 62 44 40 54 24 L57 26 C48 42 45 63 45 88 Z" opacity=".55"/><rect x="22" y="92" width="76" height="4" rx="2"/><rect x="34" y="102" width="52" height="3" rx="1.5" opacity=".6"/></g></svg></span>
+<nav class="nav" id="nav">
+  <a class="mark" href="#top">
+    <svg viewBox="0 0 120 120" fill="currentColor" aria-hidden="true"><path d="M46 88C44 56 50 30 68 12 62 34 60 60 62 88Z"/><path d="M66 88c2-26 10-44 28-56-10 18-14 36-14 56Z" opacity=".82"/><path d="M40 88c0-26 4-48 14-64l3 2c-9 16-12 37-12 62Z" opacity=".55"/><rect x="22" y="92" width="76" height="4" rx="2"/><rect x="34" y="102" width="52" height="3" rx="1.5" opacity=".6"/></svg>
+    <span class="mark-txt">
+      <span class="mark-en">KANON HOTEL</span>
+      <span class="mark-ar">فندق كنون</span>
+    </span>
   </a>
-  <nav class="top-nav">
-    <a href="#hotels">Our hotels</a>
-    <a href="#stay">Rooms</a>
+  <div class="navlinks">
+    <a href="#rooms">Rooms</a>
+    <a href="#branches">Our hotels</a>
     <a href="#dining">Dining</a>
     <a href="#gallery">Gallery</a>
     <a href="#contact">Contact</a>
-    <a class="staff-link" href="/admin">Staff sign-in</a>
-  </nav>
-</header>
+    <a href="/admin" class="navbtn">Staff sign-in</a>
+  </div>
+</nav>
 
-<!-- ============================ hero ============================ -->
+<!-- ===================== HERO ===================== -->
 <section class="hero" id="top">
-  <!-- full-bleed background slideshow -->
-  <div class="hero-bg" aria-hidden="true">
+  <div class="hero-left">
+    <div class="eyebrow">Khartoum · Makkah</div>
+    <h1>Where the Niles meet, <i>hospitality begins.</i></h1>
+    <div class="hero-ar">فندق كنون</div>
+    <p class="hero-lede">124 en-suite rooms in the heart of Al-Amarat. Indian and international
+      dining at Dan Restaurant, two coffee houses, a wellness suite and four conference halls.</p>
+    <div class="hero-cta">
+      <a href="#rooms" class="btn-gold">Check availability</a>
+      <a href="#branches" class="btn-line">Our hotels</a>
+    </div>
+    <div class="hero-stars">★ ★ ★ ★</div>
+  </div>
+  <div class="hero-right">
     <div class="hero-slide active" style="background-image:url('/img/room-suite.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('/img/room-double.jpg')"></div>
     <div class="hero-slide" style="background-image:url('/img/conference-1.jpg')"></div>
     <div class="hero-slide" style="background-image:url('/img/cafe-lounge.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('/img/room-double.jpg')"></div>
-  </div>
-  <div class="hero-scrim" aria-hidden="true"></div>
-  <canvas id="gold-dust" aria-hidden="true"></canvas>
-
-  <div class="hero-content">
-    <p class="hero-eyebrow rise">Khartoum · Makkah</p>
-    <h1 class="rise">A Sudanese welcome,<br/><em>refined.</em></h1>
-    <div class="hero-cta rise">
-      <a href="#stay" class="btn-gold">Check availability</a>
+    <div class="price-card">
+      <small>Rooms from</small>
+      <p>$200 / night</p>
     </div>
   </div>
-
-  <div class="scroll-cue rise" aria-hidden="true">
-    <span>Discover</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
-  </div>
-
-  <!-- booking bar -->
-  <form id="search-form" class="booking-bar rise-late" aria-label="Check availability">
-    <label>Hotel
-      <select id="search-hotel" required></select>
-    </label>
-    <label>Check-in
-      <input type="date" id="search-in" required />
-    </label>
-    <label>Check-out
-      <input type="date" id="search-out" required />
-    </label>
-    <label>Guests
-      <select id="search-guests">
-        <option value="1">1 guest</option>
-        <option value="2" selected>2 guests</option>
-        <option value="3">3 guests</option>
-        <option value="4">4 guests</option>
-      </select>
-    </label>
-    <button type="submit" class="btn-gold">Check availability</button>
-  </form>
 </section>
 
-<!-- ============================ marquee ============================ -->
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-track">
-    <span>DAN RESTAURANT ✦ BAWGA COFFEE SHOP ✦ KANON CAFÉ ✦ GYM · SAUNA · STEAM ✦ DAN HALL ✦ BAWGA HALL ✦ VIP MEETING HALL ✦ KANON HALL ✦ 124 EN-SUITE ROOMS ✦ KHARTOUM ✦ MAKKAH ✦&nbsp;</span>
-    <span>DAN RESTAURANT ✦ BAWGA COFFEE SHOP ✦ KANON CAFÉ ✦ GYM · SAUNA · STEAM ✦ DAN HALL ✦ BAWGA HALL ✦ VIP MEETING HALL ✦ KANON HALL ✦ 124 EN-SUITE ROOMS ✦ KHARTOUM ✦ MAKKAH ✦&nbsp;</span>
-  </div>
-</div>
+<!-- ===================== BOOKING STRIP ===================== -->
+<form class="book" id="search-form">
+  <label>Hotel<select id="search-hotel" required></select></label>
+  <label>Check-in<input type="date" id="search-in" required /></label>
+  <label>Check-out<input type="date" id="search-out" required /></label>
+  <label>Guests
+    <select id="search-guests">
+      <option value="1">1 guest</option>
+      <option value="2" selected>2 guests</option>
+      <option value="3">3 guests</option>
+      <option value="4">4 guests</option>
+    </select>
+  </label>
+  <button type="submit" class="btn-dark">Search</button>
+</form>
 
-<!-- ============================ counters ============================ -->
-<section class="counters reveal">
-  <div class="counter"><span class="counter-num" data-count="124">0</span><span class="counter-label">En-suite rooms</span></div>
-  <div class="counter"><span class="counter-num" data-count="6">0</span><span class="counter-label">Room categories</span></div>
-  <div class="counter"><span class="counter-num" data-count="4">0</span><span class="counter-label">Conference halls</span></div>
-  <div class="counter"><span class="counter-num" data-count="2">0</span><span class="counter-label">Coffee shops</span></div>
-  <div class="counter"><span class="counter-num" data-count="3">0</span><span class="counter-label">Hotels &amp; growing</span></div>
+<!-- ===================== ROOMS ===================== -->
+<section class="sec sec-narrow" id="rooms">
+  <div class="sec-head">
+    <small>Accommodation</small>
+    <h2>Rooms &amp; Suites</h2>
+    <p id="results-sub">Choose your dates above to see live availability and rates.</p>
+  </div>
+  <div class="rooms" id="results" aria-live="polite"></div>
 </section>
 
-<!-- ============================ results ============================ -->
-<section id="stay" class="section reveal">
-  <div class="section-head">
-    <p class="eyebrow">Stay with us</p>
-    <h2>Rooms &amp; suites</h2>
-    <p id="results-sub" class="section-sub">Choose your dates above to see live availability and rates.</p>
-  </div>
-  <div id="results" class="rooms-grid" aria-live="polite"></div>
-</section>
-
-<!-- ============================ hotels ============================ -->
-<section id="hotels" class="section section-deep reveal">
-  <div class="section-head">
-    <p class="eyebrow">Our hotels</p>
+<!-- ===================== BRANCHES ===================== -->
+<section class="sec sec-deep" id="branches">
+  <div class="sec-head">
+    <small>Our hotels</small>
     <h2>Two cities, one welcome</h2>
   </div>
-  <div class="hotels-grid">
-    <article class="hotel-card">
-      <div class="hotel-mark">خ</div>
+  <div class="branches">
+    <article class="branch">
+      <div class="branch-badge">خ</div>
       <h3>Kanon Hotel Khartoum</h3>
-      <p class="hotel-place">15th Street, Al-Amarat · Khartoum, Sudan</p>
-      <p>124 en-suite rooms in the diplomatic quarter of Al-Amarat, with the
-         Dan Restaurant's Indian and international kitchen, two coffee shops,
-         a fitness suite with sauna and steam room, and four named conference
-         halls for business and celebration.</p>
-      <p class="hotel-tel">☎ +249 183 59 59 59 · +249 183 59 55 55</p>
+      <p class="branch-place">15th Street, Al-Amarat · Sudan</p>
+      <p>124 en-suite rooms in the diplomatic quarter, with Dan Restaurant's Indian and
+        international kitchen, two coffee houses, a wellness suite, and four named
+        conference halls for business and celebration.</p>
+      <p class="branch-tel">☎ +249 183 59 59 59 · +249 183 59 55 55</p>
+      <p class="branch-wing">Also home to <strong>Kanon Suites</strong> — our suites wing at
+        37th Street, Khartoum 2 · ☎ +249 183 58 88 88</p>
     </article>
-    <article class="hotel-card">
-      <div class="hotel-mark">س</div>
-      <h3>Kanon Hotel Suites</h3>
-      <p class="hotel-place">37th Street, Khartoum 2 · Sudan</p>
-      <p>Our suites property in Khartoum 2 — generous space and the same
-         Kanon welcome, minutes from the city centre.</p>
-      <p class="hotel-tel">☎ +249 183 58 88 88</p>
-    </article>
-    <article class="hotel-card">
-      <div class="hotel-mark">م</div>
+    <article class="branch">
+      <div class="branch-badge">م</div>
       <h3>Kanon Hotel Makkah</h3>
-      <p class="hotel-place">Makkah, Saudi Arabia</p>
-      <p>Our second home, created for pilgrims and visitors to the Holy City —
-         quiet rooms, warm Sudanese hospitality, and everything your journey
-         needs. Opening details will be announced soon; early bookings are
-         welcome.</p>
+      <p class="branch-place">Makkah · Saudi Arabia</p>
+      <p>Our second home, created for pilgrims and visitors to the Holy City — quiet rooms,
+        the same Sudanese hospitality, and everything your journey needs. Opening details
+        will be announced soon; early enquiries are welcome.</p>
+      <p class="branch-tel">Opening soon</p>
     </article>
   </div>
 </section>
 
-<!-- ============================ dining ============================ -->
-<section id="dining" class="section reveal">
-  <div class="section-head">
-    <p class="eyebrow">Taste &amp; unwind</p>
-    <h2>Dining &amp; leisure in Khartoum</h2>
+<!-- ===================== DINING ===================== -->
+<section class="sec sec-narrow" id="dining">
+  <div class="sec-head">
+    <small>Taste &amp; unwind</small>
+    <h2>Dining &amp; facilities</h2>
   </div>
-  <div class="dining-photos">
-    <img src="/img/dining-salad.jpg" alt="Fresh salad at Dan Restaurant" loading="lazy" />
-    <img src="/img/dining-burger.jpg" alt="Burger and fries at Dan Restaurant" loading="lazy" />
-    <img src="/img/cafe-lounge.jpg" alt="Bawga Coffee Shop lounge" loading="lazy" />
+  <div class="gal" style="margin-bottom:44px">
+    <figure><img src="/img/dining-salad.jpg" alt="Dish at Dan Restaurant" loading="lazy" /><figcaption>Dan Restaurant</figcaption></figure>
+    <figure><img src="/img/dining-burger.jpg" alt="Dish at Dan Restaurant" loading="lazy" /><figcaption>International menu</figcaption></figure>
+    <figure><img src="/img/cafe-lounge.jpg" alt="Coffee lounge" loading="lazy" /><figcaption>Coffee house</figcaption></figure>
   </div>
-  <div class="amenity-row">
-    <div class="amenity"><span class="amenity-title">Dan Restaurant</span>Indian &amp; international cuisine<br/>☎ +249 123 0 44444</div>
-    <div class="amenity"><span class="amenity-title">Bawga Coffee Shop</span>Coffee, sweets &amp; conversation</div>
-    <div class="amenity"><span class="amenity-title">Kanon Café</span>Light dining through the day</div>
-    <div class="amenity"><span class="amenity-title">Wellness</span>Gym · sauna · steam room</div>
-    <div class="amenity"><span class="amenity-title">Four Conference Halls</span>Dan Hall · Bawga Hall · VIP Meeting Hall · Kanon Hall</div>
+  <div class="facils">
+    <div class="facil"><b>Dan Restaurant</b><span>Indian &amp; international cuisine<br />☎ +249 123 0 44444</span></div>
+    <div class="facil"><b>Bawga Coffee Shop</b><span>Coffee, sweets &amp; conversation</span></div>
+    <div class="facil"><b>Kanon Café</b><span>Light dining through the day</span></div>
+    <div class="facil"><b>Wellness</b><span>Gym · sauna · steam room</span></div>
+    <div class="facil"><b>Four Halls</b><span>Dan · Bawga · VIP Meeting · Kanon</span></div>
   </div>
 </section>
 
-<!-- ============================ gallery ============================ -->
-<section id="gallery" class="section reveal">
-  <div class="section-head">
-    <p class="eyebrow">Gallery</p>
-    <h2>Inside Kanon Hotel Khartoum</h2>
+<!-- ===================== GALLERY ===================== -->
+<section class="sec sec-sand" id="gallery">
+  <div class="sec-head">
+    <small>Gallery</small>
+    <h2>Inside Kanon Hotel</h2>
   </div>
-  <div class="gallery-grid">
+  <div class="gal">
     <figure><img src="/img/room-suite.jpg" alt="Guest room" loading="lazy" /><figcaption>Guest room</figcaption></figure>
     <figure><img src="/img/room-double.jpg" alt="Double room" loading="lazy" /><figcaption>Double room</figcaption></figure>
     <figure><img src="/img/bathroom.jpg" alt="En-suite bathroom" loading="lazy" /><figcaption>En-suite bathroom</figcaption></figure>
@@ -182,44 +148,25 @@
   </div>
 </section>
 
-<!-- ============================ video ============================ -->
-<section id="video" class="section reveal">
-  <div class="section-head">
-    <p class="eyebrow">Watch</p>
-    <h2>Experience Kanon</h2>
-    <p class="section-sub">A video tour of the hotel is on its way.</p>
-  </div>
-  <div class="video-frame">
-    <div class="video-placeholder">
-      <div class="play-ring"><div class="play-tri"></div></div>
-      <p>Video tour — coming soon</p>
-    </div>
-    <!-- When the video is ready, replace the placeholder above with:
-         <iframe src="https://www.youtube.com/embed/VIDEO_ID" title="Kanon Hotel tour"
-                 allowfullscreen loading="lazy"></iframe> -->
-  </div>
-</section>
-
-<!-- ============================ contact ============================ -->
-<footer id="contact" class="footer">
-  <div class="footer-grid">
+<!-- ===================== FOOTER ===================== -->
+<footer class="foot" id="contact">
+  <div class="foot-grid">
     <div>
-      <div class="wordmark footer-wordmark">
-        <span class="logo-mark"><svg viewBox="0 0 120 120" fill="none"><g fill="currentColor"><path d="M46 88 C44 56 50 30 68 12 C62 34 60 60 62 88 Z"/><path d="M66 88 C68 62 76 44 94 32 C84 50 80 68 80 88 Z" opacity=".82"/><path d="M40 88 C40 62 44 40 54 24 L57 26 C48 42 45 63 45 88 Z" opacity=".55"/><rect x="22" y="92" width="76" height="4" rx="2"/><rect x="34" y="102" width="52" height="3" rx="1.5" opacity=".6"/></g></svg></span>
-        <span class="wordmark-text">
-          <span class="wordmark-ar">فندق كنون</span>
-          <span class="wordmark-en">KANON HOTEL</span>
-          <span class="stars">★ ★ ★ ★</span>
+      <div class="mark">
+        <svg viewBox="0 0 120 120" fill="currentColor" aria-hidden="true"><path d="M46 88C44 56 50 30 68 12 62 34 60 60 62 88Z"/><path d="M66 88c2-26 10-44 28-56-10 18-14 36-14 56Z" opacity=".82"/><rect x="22" y="92" width="76" height="4" rx="2"/></svg>
+        <span class="mark-txt">
+          <span class="mark-en">KANON HOTEL</span>
+          <span class="mark-ar">فندق كنون</span>
         </span>
       </div>
       <p>A Kanon Group company</p>
     </div>
     <div>
-      <h4>Kanon Hotel</h4>
+      <h4>Khartoum</h4>
       <p>15th Street, Al-Amarat<br />P.O. Box 2425, Khartoum, Sudan<br />☎ +249 183 59 59 59</p>
     </div>
     <div>
-      <h4>Kanon Hotel Suites</h4>
+      <h4>Kanon Suites</h4>
       <p>37th Street, Khartoum 2<br />☎ +249 183 58 88 88</p>
     </div>
     <div>
@@ -228,16 +175,14 @@
     </div>
     <div>
       <h4>Reservations</h4>
-      <p>Book online any time —<br />your confirmation code arrives instantly.</p>
+      <p>Book direct on this site —<br />your confirmation code arrives instantly.</p>
     </div>
   </div>
-  <p class="footer-line">© Kanon Hotels. All rights reserved.</p>
+  <p class="foot-line">© Kanon Hotel. All rights reserved.</p>
 </footer>
 
-<!-- ============================ booking modal ============================ -->
 <div id="modal-root"></div>
 <div id="toast" class="toast hidden"></div>
-
 <script src="/booking.js"></script>
 </body>
 </html>
